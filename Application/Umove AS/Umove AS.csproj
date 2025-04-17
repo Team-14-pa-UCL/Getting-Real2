@@ -13,7 +13,6 @@
     <Folder Include="Model\" />
     <Folder Include="Handler\" />
     <Folder Include="Type\" />
-    <Folder Include="UI\" />
   </ItemGroup>
 
 </Project>
