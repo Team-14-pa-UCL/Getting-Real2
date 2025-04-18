@@ -1,82 +1,61 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Umove_AS.UI
 {
-    public class MenuManager
+    /// <summary>
+    /// Styrer navigationen mellem menu‑sider og håndterer bruger‑input.
+    /// </summary>
+    public sealed class MenuManager
     {
-        // Stack til at holde styr på menu-hierarkiet. Hver menu er en liste af MenuItem-objekter.
-        private Stack<List<MenuItem>> menuStack = new();
+        private readonly IConsole _con;
+        private readonly Stack<MenuPage> _history = new();
+        private int _selected;
 
-        // Viser en ny menu og tilføjer den til stacken.
-        public void ShowMenu(List<MenuItem> menu, string title = "")
+        public MenuManager(IConsole console) => _con = console;
+
+        /// <summary> Push første side og start navigation‑løkken. </summary>
+        public void Navigate(MenuPage root)
         {
-            menuStack.Push(menu); // Tilføjer den nye menu til toppen af stacken.
-            RunCurrentMenu(title); // Kører den aktuelle menu.
-        }
+            _history.Push(root);
 
-        // Kører den menu, der er øverst i stacken.
-        private void RunCurrentMenu(string title = "")
-        {
-            var currentMenu = menuStack.Peek(); // Henter den øverste menu fra stacken uden at fjerne den.
-            int selectedIndex = 0; // Holder styr på det aktuelt valgte menupunkt.
-            bool inMenu = true; // Bruges til at holde menuen åben, indtil brugeren vælger at afslutte.
-
-            while (inMenu)
+            while (_history.Count > 0)
             {
-                // Tegner menuen på skærmen med det aktuelle valg markeret.
-                UIMenu.DrawMenu(currentMenu, selectedIndex, title);
+                var current = _history.Peek();
+                ClampSelected(current.Items.Count);
 
-                // Læser brugerens tastetryk.
-                ConsoleKey key = Console.ReadKey(true).Key;
+                UIMenu.DrawMenu(_con, current, _selected);
 
-                // Håndterer brugerens input.
+                var key = _con.ReadKey(intercept: true).Key;
                 switch (key)
                 {
-                    case ConsoleKey.UpArrow:
-                        // Flytter markeringen opad i menuen. Hvis vi er på det første element, går vi til det sidste.
-                        selectedIndex = (selectedIndex - 1 + currentMenu.Count) % currentMenu.Count;
-                        break;
-                    case ConsoleKey.DownArrow:
-                        // Flytter markeringen nedad i menuen. Hvis vi er på det sidste element, går vi til det første.
-                        selectedIndex = (selectedIndex + 1) % currentMenu.Count;
-                        break;
+                    case ConsoleKey.UpArrow: _selected--; break;
+                    case ConsoleKey.DownArrow: _selected++; break;
+
                     case ConsoleKey.Enter:
-                        // Når brugeren trykker Enter, udføres den valgte menuitems handling.
-                        Console.Clear(); // Rydder konsollen.
-                        currentMenu[selectedIndex].Action.Invoke(); // Udfører den tilknyttede handling.
-                        inMenu = false; // Afslutter menuen.
+                        current.Items[_selected].Action?.Invoke();
+                        _selected = 0; // reset til første punkt efter en action
+                        break;
+
+                    case ConsoleKey.Escape:
+                        _history.Pop();         // gå ét niveau tilbage
+                        _selected = 0;
                         break;
                 }
             }
-
-            // Når menuen afsluttes, fjernes den fra stacken.
-            menuStack.Pop();
         }
 
-        // Går tilbage til den forrige menu i stacken.
-        public void GoBack()
+        /// <summary> Skubber en ny side på stakken. </summary>
+        public void Push(MenuPage page)
         {
-            if (menuStack.Count > 1) // Tjekker, om der er en tidligere menu at gå tilbage til.
-            {
-                menuStack.Pop(); // Fjerner den aktuelle menu fra stacken.
-                RunCurrentMenu(); // Kører den forrige menu.
-            }
-            else
-            {
-                // Hvis der ikke er nogen tidligere menu, sendes brugeren til hovedmenuen.
-                Program.ShowMainMenu(); // Fallback til hovedmenuen.
-            }
+            _history.Push(page);
         }
 
-        // Rydder hele menu-stacken.
-        public void ClearMenuStack()
+        private void ClampSelected(int count)
         {
-            menuStack.Clear(); // Fjerner alle menuer fra stacken.
+            if (count == 0) { _selected = 0; return; }
+            if (_selected < 0) _selected = count - 1;
+            else if (_selected >= count) _selected = 0;
         }
     }
 }

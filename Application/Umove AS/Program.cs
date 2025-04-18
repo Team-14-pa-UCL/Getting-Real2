@@ -1,98 +1,72 @@
 ﻿using Umove_AS.UI;
-using System;
 using System.Collections.Generic;
 
 namespace Umove_AS
 {
-    /// <summary>
-    /// Program­klassen fungerer som entry‑point og central menu‑controller
-    /// for det tekst‑baserede UI.
-    /// </summary>
     class Program
     {
-        // Én delt MenuManager-instans styrer navigationen (stack med "tilbage"‑historik).
-        static readonly MenuManager menuManager = new();
+        private static readonly MenuManager menu = new(new RealConsole());
 
-        /// <summary>
-        /// Applikationens entry‑point (CLR leder efter Main).
-        /// </summary>
         static void Main()
         {
-            ShowMainMenu();   // Vis startmenuen og overlader kontrol til MenuManager.
+            menu.Navigate(BuildMainMenu());
         }
 
-        /// <summary>
-        /// Sammensætter og viser hovedmenuen.
-        /// </summary>
-        public static void ShowMainMenu()
-        {
-            List<MenuItem> mainMenu = new()
-            {
-                // Hver MenuItem tager tekst + en Action‑dele­gat der kaldes ved valg.
-                new MenuItem("Chaufør", DriverMenu),            // TODO: Kunne blive et login‑punkt.
-                new MenuItem("Driftmedarbejder", OperationStaffMenu),
-                new MenuItem("Exit", () => Environment.Exit(0))
-            };
+        // ---------- menu‑fabrikker ----------
 
-            menuManager.ShowMenu(mainMenu, "UMOVE A/S");   // Tegner via UIMenu og håndterer input.
+        private static MenuPage BuildMainMenu() => new(
+            "UMOVE A/S",
+            new List<MenuItem>
+            {
+                new ("Chauffør",        () => menu.Push(BuildDriverMenu())),
+                new ("Driftmedarbejder",() => menu.Push(BuildOperationStaffMenu())),
+                //new ("Exit",            () => Environment.Exit(0))
+            });
+
+        private static MenuPage BuildDriverMenu() => new(
+            "Chaufør",
+            new List<MenuItem>
+            {
+                new ("Indtast batteriprocent for bussen", PromptBatteryPercentage),
+                new ("Fejlrapport: hurtig opladning",      PromptFastChargeError),
+                //new ("Tilbage",                            () => 
+            });
+
+        private static MenuPage BuildOperationStaffMenu() => new(
+            "Driftmedarbejder",
+            new List<MenuItem>
+            {
+                new ("Administrer stam bus‑data",   PromptBusMasterData),
+                new ("Overvåg batteristatus",       PromptBatteryMonitor),
+                //new ("Tilbage",                     () => { /* Esc håndterer dette */ })
+            });
+
+        // ---------- “modale” prompts (dummy) ----------
+
+        private static void PromptBatteryPercentage()
+        {
+            Console.Write("Angiv batteriprocent: ");
+            var _ = Console.ReadLine();
+            Console.WriteLine("Gemmer værdien...");
+            Console.ReadKey();
         }
 
-        /// <summary>
-        /// Menuen som chauføren ser efter login/valg.
-        /// </summary>
-        public static void DriverMenu()
+        private static void PromptFastChargeError()
         {
-            List<MenuItem> driverMenu = new()
-            {
-                new MenuItem("Indtast bateriprocent for bussen", () =>
-                {
-                    Console.WriteLine("Her kaldes senere en metode …");
-                    Console.ReadKey();
-
-                    menuManager.ClearMenuStack();  // “Frisk start” når vi går tilbage til DriverMenu.
-                    DriverMenu();                  // Tegn menuen igen.
-                }),
-                new MenuItem("Fejl Rapporter hurtig opladning", () =>
-                {
-                    Console.WriteLine("Her kaldes en anden metode …");
-                    Console.ReadKey();
-
-                    menuManager.ClearMenuStack();
-                    DriverMenu();
-                }),
-                new MenuItem("Tilbage", () => menuManager.GoBack())
-            };
-
-            menuManager.ShowMenu(driverMenu, "Driver Menu");
+            Console.WriteLine("Fejlrapport registreret!");
+            Console.ReadKey();
         }
 
-        /// <summary>
-        /// Menuen for drift­medarbejdere.
-        /// </summary>
-        public static void OperationStaffMenu()
+        private static void PromptBusMasterData()
         {
-            List<MenuItem> operationStaffMenu = new()
-            {
-                new MenuItem("Administrer stam bus data", () =>
-                {
-                    Console.WriteLine("Her skal stamdata‑funktionalitet ligge …");
-                    Console.ReadKey();
+            Console.WriteLine("Stamdata‑redigering (dummy).");
+            Console.ReadKey();
+        }
 
-                    menuManager.ClearMenuStack();
-                    OperationStaffMenu();
-                }),
-                new MenuItem("Overvågning af batteristatus", () =>
-                {
-                    Console.WriteLine("Her skal overvågnings‑view ligge …");
-                    Console.ReadKey();
-
-                    menuManager.ClearMenuStack();
-                    OperationStaffMenu();
-                }),
-                new MenuItem("Tilbage", () => menuManager.GoBack())
-            };
-
-            menuManager.ShowMenu(operationStaffMenu, "Driftmedarbejder");
+        private static void PromptBatteryMonitor()
+        {
+            Console.WriteLine("Viser batteriovervågning (dummy).");
+            Console.ReadKey();
         }
     }
 }
