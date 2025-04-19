@@ -30,6 +30,8 @@ namespace Umove_AS
             {
                 new ("Chauffør",        () => menu.Push(BuildDriverMenu())),
                 new ("Driftmedarbejder",() => menu.Push(BuildOperationStaffMenu())),
+                new ("IT-Medarbejder",  () => menu.Push(BuildITWorkerMenu())),
+
                 
             }); // ); afslutter metode & constructor kaldet. Alt inde i new, er parametere.
 
@@ -51,8 +53,17 @@ namespace Umove_AS
                 
             });
 
-        
-        // --- DUMMY PROMPTS --- Er eksempler, og metoderne skal være Handler mappen.
+        private static MenuPage BuildITWorkerMenu() => new(
+            "Driftmedarbejder",
+            new List<MenuItem>
+            {
+                new ("Rediger Chauføre ",    PromtDummy),
+                new ("Rediger Busser",       PromtDummy),
+
+            });
+
+
+        // --- DUMMY PROMPTS --- Er eksempler, og metoderne skal være Model mappen.
         private static void PromptBatteryPercentage()
         {
             Console.Write("Angiv batteriprocent: ");
@@ -76,6 +87,11 @@ namespace Umove_AS
         private static void PromptBatteryMonitor()
         {
             Console.WriteLine("Viser batteriovervågning (dummy).");
+            Console.ReadKey();
+        }
+        private static void PromtDummy()
+        {
+            Console.WriteLine("Det her er en dummy");
             Console.ReadKey();
         }
     }
