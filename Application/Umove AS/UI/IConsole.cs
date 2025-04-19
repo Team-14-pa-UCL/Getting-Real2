@@ -1,6 +1,6 @@
 ﻿namespace Umove_AS.UI
 {
-    /// <summary> Minimal wrapper om System.Console så vi kan mocke i tests. </summary>
+    /// <summary> En kontrak på funktioner i enhver konsol/side i systemet skal bruge <summary>
     public interface IConsole
     {
         void Clear();
@@ -11,7 +11,8 @@
         ConsoleColor BackgroundColor { get; set; }
     }
 
-    public sealed class RealConsole : IConsole
+    /// <summary> Implementering af interface IConsole </summary>
+    public sealed class RealConsole : IConsole // : betyder implementer interface Iconsole
     {
         public void Clear() => Console.Clear();
         public void WriteLine(string text) => Console.WriteLine(text);

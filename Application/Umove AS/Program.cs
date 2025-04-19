@@ -5,23 +5,33 @@ namespace Umove_AS
 {
     class Program
     {
+        /// <summary>
+        /// Opretter 2 objecter, og er 2 constructore involveret. (MenuManger & standardIConsole.)
+        /// Det betyder at RealConsole som er i IConsole, indlæser indput og gemmer dem.
+        /// Menumanger, bruger indputtet og bruger det videre til output.
+        /// Static for at man kun behøver at oprette det en gang og det bruges,
+        /// af alle funktioner.
+        /// Readonly gør at man ikke kan overskrive den.
+        /// </summary>
         private static readonly MenuManager menu = new(new RealConsole());
 
+        /// <summary> /// Kalder bevægelse funktion fra MenuManager, samt hovedmenu /// </summary>
         static void Main()
         {
-            menu.Navigate(BuildMainMenu());
+            menu.Navigate(BuildMainMenu()); //Kalder bevægelse funktion fra MenuManager, samt hovedmenu.
         }
 
-        // ---------- menu‑fabrikker ----------
+        // Laver vores menuer.
 
+        // Hovedmenu, 
         private static MenuPage BuildMainMenu() => new(
             "UMOVE A/S",
             new List<MenuItem>
             {
                 new ("Chauffør",        () => menu.Push(BuildDriverMenu())),
                 new ("Driftmedarbejder",() => menu.Push(BuildOperationStaffMenu())),
-                //new ("Exit",            () => Environment.Exit(0))
-            });
+                
+            }); // ); afslutter metode & constructor kaldet. Alt inde i new, er parametere.
 
         private static MenuPage BuildDriverMenu() => new(
             "Chaufør",
@@ -29,7 +39,7 @@ namespace Umove_AS
             {
                 new ("Indtast batteriprocent for bussen", PromptBatteryPercentage),
                 new ("Fejlrapport: hurtig opladning",      PromptFastChargeError),
-                //new ("Tilbage",                            () => 
+                
             });
 
         private static MenuPage BuildOperationStaffMenu() => new(
@@ -38,11 +48,11 @@ namespace Umove_AS
             {
                 new ("Administrer stam bus‑data",   PromptBusMasterData),
                 new ("Overvåg batteristatus",       PromptBatteryMonitor),
-                //new ("Tilbage",                     () => { /* Esc håndterer dette */ })
+                
             });
 
-        // ---------- “modale” prompts (dummy) ----------
-
+        
+        // --- DUMMY PROMPTS --- Er eksempler, og metoderne skal være Handler mappen.
         private static void PromptBatteryPercentage()
         {
             Console.Write("Angiv batteriprocent: ");
