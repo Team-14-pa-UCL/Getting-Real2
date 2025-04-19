@@ -57,13 +57,13 @@ namespace Umove_AS
             "Driftmedarbejder",
             new List<MenuItem>
             {
-                new ("Rediger Chauføre ",    PromtDummy),
-                new ("Rediger Busser",       PromtDummy),
+                new ("Rediger Chauføre ",    PromptDummy),
+                new ("Rediger Busser",       PromptDummy),
 
             });
 
 
-        // --- DUMMY PROMPTS --- Er eksempler, og metoderne skal være Model mappen.
+        // Dummy Prompts.. Er eksempler, og metoderne skal være Model mappen.
         private static void PromptBatteryPercentage()
         {
             Console.Write("Angiv batteriprocent: ");
@@ -89,7 +89,7 @@ namespace Umove_AS
             Console.WriteLine("Viser batteriovervågning (dummy).");
             Console.ReadKey();
         }
-        private static void PromtDummy()
+        private static void PromptDummy()
         {
             Console.WriteLine("Det her er en dummy");
             Console.ReadKey();
