@@ -9,23 +9,27 @@ namespace Umove_AS.UI
     {
         public static void DrawMenu(IConsole con, MenuPage page, int selectedIndex)
         {
-            con.Clear(); //Skærmen rydes
+            con.Clear();
 
-            // Tegner titelbox hvis der er titel -> metode længere nede.
-            if (!string.IsNullOrEmpty(page.Title)) 
-            {
-                DrawTitleBox(con, page.Title);
-            }
+            var titleLines = string.IsNullOrEmpty(page.Title) ? new string[0] : page.Title.Split('\n');
+            int titleWidth = titleLines.Any() ? titleLines.Max(l => l.Length) : 0;
+            int menuWidth = page.Items.Any() ? page.Items.Max(i => i.Text.Length) + 10 : 0;
 
-            int boxWidth = page.Items.Max(i => i.Text.Length) + 10; //Finder den længste tekst i menuen, og ligger 10 oven i
-            con.WriteLine("╔" + new string('═', boxWidth) + "╗"); //Tegner øverste ramme
+            int boxWidth = Math.Max(titleWidth, menuWidth);
 
-            //Tegner hvert menupunkt, en linje ad gangen
+            // Tegn titel (hvis den findes) med fælles bredde
+            if (titleLines.Any())
+                DrawTitleBox(con, page.Title, boxWidth);
+
+            // Tegn menu-ramme
+            con.WriteLine($"╔{new string('═', boxWidth)}╗");
+
             for (int i = 0; i < page.Items.Count; i++)
             {
-                string line = $"║  {page.Items[i].Text.PadRight(boxWidth - 4)}  ║";
+                string text = page.Items[i].Text;
+                string line = $"║  {text.PadRight(boxWidth - 4)}  ║";
 
-                if (i == selectedIndex) //Giver farven til det markerede felt.
+                if (i == selectedIndex)
                 {
                     con.BackgroundColor = ConsoleColor.DarkBlue;
                     con.ForegroundColor = ConsoleColor.White;
@@ -35,18 +39,28 @@ namespace Umove_AS.UI
                 con.ResetColor();
             }
 
-            con.WriteLine("╚" + new string('═', boxWidth) + "╝"); //Tegner nederste ramme
-            con.WriteLine("\n↑/↓ = flyt, Enter = vælg, Esc = tilbage"); //Forklaring til brug
+            con.WriteLine($"╚{new string('═', boxWidth)}╝");
+
+            con.WriteLine("\n↑/↓ = flyt, Enter = vælg, Esc = tilbage");
         }
 
-        //Hvis der er en titel box, bliver boxen lavet her.
-        private static void DrawTitleBox(IConsole con, string title)
+        private static void DrawTitleBox(IConsole con, string title, int boxWidth)
         {
-            int width = title.Length + 4;
+            var lines = title.Split('\n');                      // Del op i linjer
             con.ForegroundColor = ConsoleColor.Yellow;
-            con.WriteLine($"╔{new string('═', width)}╗");
-            con.WriteLine($"║  {title}  ║");
-            con.WriteLine($"╚{new string('═', width)}╝");
+            con.WriteLine($"╔{new string('═', boxWidth)}╗");
+
+            foreach (var line in lines)
+            {
+                int padding = boxWidth - line.Length;
+                int padLeft = padding / 2;                              // 2 for kanten og mellemrum
+                int padRight = boxWidth - padLeft - line.Length;        // Resten til højre
+
+                string centeredLine = "║" + new string(' ', padLeft) + line + new string(' ', padRight) + "║";
+                con.WriteLine(centeredLine);
+            }
+
+            con.WriteLine($"╚{new string('═', boxWidth)}╝");
             con.ResetColor();
         }
     }
