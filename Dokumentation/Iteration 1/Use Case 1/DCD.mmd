@@ -1,7 +1,7 @@
 classDiagram
     class Bus {
         +string ID
-        +double Batterikapacity
+        +double BatteriCapacity
         +double Usage
         +Update(Batterikapacity, Usage)
     }
@@ -9,9 +9,9 @@ classDiagram
     class Garage {
         +List<Bus> Busses
         +AddBus(Bus bus)
-        +EditBus(string id, double newCapacity, double newConsumption)
+        +EditBus(string id, double newBatteryCapacity, double newBettertyUsage)
         +RemoveBus(string id)
         +GetAllBuses() List<Bus>
     }
     
-    Garage --> Bus
+    Garage "1" --> "*" Bus

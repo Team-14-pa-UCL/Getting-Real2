@@ -5,9 +5,6 @@ classDiagram
         +double Forbrug
     }
     class Garage {
-        +AddBus(Bus bus)
-        +EditBus(string id, Bus updatedBus)
-        +RemoveBus(string id)
-        +ListAllBuses() List<Bus>
+        +List<Bus> Busser
     }
     Garage "1" --> "*" Bus : administrerer
