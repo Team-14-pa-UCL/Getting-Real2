@@ -1,0 +1,15 @@
+sequenceDiagram
+    participant Driftsmedarbejder
+    participant System
+
+    Driftsmedarbejder->>System: Tilføj Bus(ID, Batterikapacitet, Forbrug)
+    System-->>Driftsmedarbejder: Bus oprettet
+
+    Driftsmedarbejder->>System: Rediger Bus(ID, ny Batterikapacitet, nyt Forbrug)
+    System-->>Driftsmedarbejder: Bus opdateret
+
+    Driftsmedarbejder->>System: Slet Bus(ID)
+    System-->>Driftsmedarbejder: Bus slettet
+
+    Driftsmedarbejder->>System: Se alle Busser
+    System-->>Driftsmedarbejder: Liste over busser

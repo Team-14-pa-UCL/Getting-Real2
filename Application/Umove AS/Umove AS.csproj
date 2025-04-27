@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <Folder Include="Data\" />
-    <Folder Include="Model\" />
     <Folder Include="Handler\" />
     <Folder Include="Type\" />
   </ItemGroup>

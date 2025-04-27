@@ -5,6 +5,8 @@ namespace Umove_AS
 {
     class Program
     {
+        private static UIGarage uiGarage = new UIGarage();
+
         /// <summary>
         /// Opretter 2 objecter, og er 2 constructore involveret. (MenuManger & standardIConsole.)
         /// Det betyder at RealConsole som er i IConsole, indlæser indput og gemmer dem.
@@ -48,9 +50,19 @@ namespace Umove_AS
             "Driftmedarbejder",
             new List<MenuItem>
             {
-                new ("Administrer stam bus‑data",   PromptBusMasterData),
-                new ("Overvåg batteristatus",       PromptBatteryMonitor),
+                new ("Administrer stam bus‑data",   () => menu.Push(AdminstrateBusData())),
+                new ("Overvåg batteristatus",                       PromptBatteryMonitor),
                 
+            });
+
+        private static MenuPage AdminstrateBusData() => new(
+            "Driftmedarbejder",
+            new List<MenuItem>
+            {
+                new ("Opret bus", () => uiGarage.CreateBus()),
+                new ("Rediger bus", () => uiGarage.EditBus()),
+                new ("Slet Bus",    () => uiGarage.DeleteBus()),
+                new ("Vis Busser",  () => uiGarage.ShowBusses()),
             });
 
         private static MenuPage BuildITWorkerMenu() => new(
