@@ -1,0 +1,10 @@
+classDiagram
+    class Bus {
+        +string ID
+        +double Batterikapacitet
+        +double Forbrug
+    }
+    class Garage {
+        +List<Bus> Busser
+    }
+    Garage "1" --> "*" Bus : administrerer
