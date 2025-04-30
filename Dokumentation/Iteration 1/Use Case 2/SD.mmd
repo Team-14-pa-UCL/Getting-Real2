@@ -21,10 +21,10 @@ sequenceDiagram
 	BMS-->>System: BatteryStatus
 	System-->>Driftsmedarbejder: ShowBatteryStatus
 
-	Driftsmedarbejder->>System: FilterLowBatteryStatus
-	System->>BMS: FilterLowBatteryStatus
-	BMS-->>System: LowBatteryStatus
-	System-->>Driftsmedarbejder: Show LowBatteryStatus
+	Driftsmedarbejder->>System: FilterBatteryStatus
+	System->>BMS: FilterBatteryStatus
+	BMS-->>System: BatteryStatus
+	System-->>Driftsmedarbejder: Show BatteryStatus
 
 	Driftsmedarbejder->>System: Choose Bus
 	System-->>Driftsmedarbejder: Request BusID
@@ -39,15 +39,15 @@ sequenceDiagram
 	System-->>Driftsmedarbejder: Display("Bus offline")
 	System-->>Driftsmedarbejder: Show DetailedBusStatus
 	
-	Driftsmedarbejder->>System: Choose EstimatedBatteryTimeLeft
-	System->>BMS: Check EstimatedBatteryTimeLeft
-	BMS-->>System: EstimatedBatteryTimeLeft
-	System-->>Driftsmedarbejder: Show EstimatedBatteryTimeLeft
+	Driftsmedarbejder->>System: Choose BatteryTimeLeft
+	System->>BMS: Check BatteryTimeLeft
+	BMS-->>System: BatteryTimeLeft
+	System-->>Driftsmedarbejder: Show BatteryTimeLeft
 
-	Driftsmedarbejder->>System: ChooseBusActiveDuty
-	System->>BMS: CheckBusActiveDuty
-	BMS-->>System: ListBusActiveDuty
-	System-->>Driftsmedarbejder: Show BusActiveDuty
+	Driftsmedarbejder->>System: Choose FilterBusStatus
+	System->>BMS: Filter BusStatus
+	BMS-->>System: ListFilteredBusStatus
+	System-->>Driftsmedarbejder: Show ListFilteredBusStatus
 
 	Driftsmedarbejder->>System: SortByBatteryPercentage
 	System->>BMS: SortByBatteryPercentage

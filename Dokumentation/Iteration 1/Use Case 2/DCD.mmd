@@ -1,0 +1,24 @@
+classDiagram
+    class Bus {
+        +string ID
+        +double BatteryCapacity
+    }
+
+    class Garage {
+        +List<Bus> Busses
+        +enum CurrentBusStatus
+
+        +GetAllBuses() List<Bus>
+    }
+
+    class CurrentBusStatus{
+        <<enumeration>>
+        InRoute
+        Free
+        Garage
+        Charging
+        Repair
+
+    }
+    
+    Garage "1" --> "*" Bus
