@@ -1,0 +1,57 @@
+sequenceDiagram
+	participant Driftsmedarbejder
+	participant System
+	participant BMS(BusManagementSystem)
+
+	System-->>Driftsmedarbejder: RequestEmployeeLogin
+	Driftsmedarbejder->>System: InsertEmployeeLogin
+
+	System->>BMS: VerifyEmployeeLogin
+	BMS-->>System: EmployeeLoginVerified
+
+	System-->>Driftsmedarbejder: ShowOptions
+	Driftsmedarbejder->>System: ChooseOption
+
+	System->>BMS: ChooseBusList
+	BMS-->>System: BusList
+	System-->>Driftsmedarbejder: ShowBusList
+
+	Driftsmedarbejder->>System: ChooseBatteryStatus
+	System->>BMS: CheckBatteryStatus
+	BMS-->>System: BatteryStatus
+	System-->>Driftsmedarbejder: ShowBatteryStatus
+
+	Driftsmedarbejder->>System: FilterLowBatteryStatus
+	System->>BMS: FilterLowBatteryStatus
+	BMS-->>System: LowBatteryStatus
+	System-->>Driftsmedarbejder: Show LowBatteryStatus
+
+	Driftsmedarbejder->>System: Choose Bus
+	System-->>Driftsmedarbejder: Request BusID
+	Driftsmedarbejder->>System: Enter BusID
+	System->>BMS: Check BusID
+	BMS-->>System: BusID Verified
+	System-->>Driftsmedarbejder: Display("Bus Not Found")
+	System-->>Driftsmedarbejder: Show Options
+	Driftsmedarbejder->>System: Choose DetailedBusStatus
+	System->>BMS: CheckDetailedBusStatus
+	BMS-->>System: DetailedBusStatus
+	System-->>Driftsmedarbejder: Display("Bus offline")
+	System-->>Driftsmedarbejder: Show DetailedBusStatus
+	
+	Driftsmedarbejder->>System: Choose EstimatedBatteryTimeLeft
+	System->>BMS: Check EstimatedBatteryTimeLeft
+	BMS-->>System: EstimatedBatteryTimeLeft
+	System-->>Driftsmedarbejder: Show EstimatedBatteryTimeLeft
+
+	Driftsmedarbejder->>System: ChooseBusActiveDuty
+	System->>BMS: CheckBusActiveDuty
+	BMS-->>System: ListBusActiveDuty
+	System-->>Driftsmedarbejder: Show BusActiveDuty
+
+	Driftsmedarbejder->>System: SortByBatteryPercentage
+	System->>BMS: SortByBatteryPercentage
+	BMS-->>System: SortedListeByBatteryPercentage
+	System-->>Driftsmedarbejder: Show SortedListeByBatterPercentage
+
+
