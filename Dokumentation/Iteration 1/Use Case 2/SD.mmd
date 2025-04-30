@@ -49,9 +49,9 @@ sequenceDiagram
 	BMS-->>System: ListFilteredBusStatus
 	System-->>Driftsmedarbejder: Show ListFilteredBusStatus
 
-	Driftsmedarbejder->>System: SortByBatteryPercentage
-	System->>BMS: SortByBatteryPercentage
-	BMS-->>System: SortedListeByBatteryPercentage
-	System-->>Driftsmedarbejder: Show SortedListeByBatterPercentage
+	Driftsmedarbejder->>System: SortByCurrentCharge
+	System->>BMS: SortByCurrentCharge
+	BMS-->>System: SortedListByCurrentCharge
+	System-->>Driftsmedarbejder: Show SortedListByCurrentCharge
 
 
