@@ -1,0 +1,12 @@
+sequenceDiagram
+    participant Driftsmedarbejder
+    participant System
+
+    Driftsmedarbejder->>System: ValgBusListe
+    System-->>Driftsmedarbejder: BusListe
+
+    Driftsmedarbejder->>System: ValgBusIDrift
+    System-->>Driftsmedarbejder: ListeBusIDrift
+    
+    Driftsmedarbejder->>System: SorterEfterBatteriProcent
+    System-->>Driftsmedarbejder: SorteretListe

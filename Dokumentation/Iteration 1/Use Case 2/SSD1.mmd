@@ -1,0 +1,18 @@
+sequenceDiagram
+    participant Driftsmedarbejder
+    participant System
+
+    Driftsmedarbejder->>System: ValgBusListe
+    System-->>Driftsmedarbejder: BusListe
+
+    Driftsmedarbejder->>System: ValgBatteriStatus
+    System-->>Driftsmedarbejder: BatteriStatus
+    
+    Driftsmedarbejder->>System: FilterLavBatteriStatus
+    System-->>Driftsmedarbejder: BusListeLaveBatteriStatus
+
+    Driftsmedarbejder->>System: Valg BusID
+    System-->>Driftsmedarbejder: Detaljeret Bus Status
+
+    Driftsmedarbejder->>System: Valg Estimeret Driftstid
+    System-->>Driftsmedarbejder: Estimeret Driftstid
