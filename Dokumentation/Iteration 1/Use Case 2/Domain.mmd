@@ -1,8 +1,13 @@
 classDiagram
     class Bus {
-        +string ID
+        ID
+        batteryCapacity
+        currentCharge
+        kmPerKwh
+        location
+        busstatus
     }
     class Garage {
-        +List<Bus> Busser
+        Busser
     }
-    Garage "1" --> "*" Bus : administrerer
+    Garage "1" --> "*" Bus
