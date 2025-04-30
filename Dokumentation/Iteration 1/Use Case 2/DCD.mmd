@@ -3,23 +3,35 @@ classDiagram
         +string ID
         +double BatteryCapacity
         +double CurrentCharge
+        +double kmPerKwh
+        +string Location
+        +GetBatteryStatus() void
+        +FilterBatteryStatus() void
+        +GetBusStatus() void
+        +GetBatteryTimeLeft() void
+        +GetChargingTimeLeft() void
+        +SortByCurrentCharge() void
     }
 
     class Garage {
         +List<Bus> Busses
-        +enum CurrentBusStatus
-
+        +enum BusStatus
         +GetAllBuses() List<Bus>
+        +GetBatteryStatus() void
+        +FilterBatteryStatus() void
+        +GetBusStatus() void
+        +GetBatteryTimeLeft() void
+        +GetChargingTimeLeft() void
     }
 
-    class CurrentBusStatus{
+    class BusStatus{
         <<enumeration>>
         InRoute
         Free
         Garage
         Charging
         Repair
-
     }
     
     Garage "1" --> "*" Bus
+    Bus -- BusStatus : has a
