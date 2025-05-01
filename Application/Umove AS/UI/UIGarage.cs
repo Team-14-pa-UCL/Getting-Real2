@@ -80,7 +80,7 @@ namespace Umove_AS.UI
             var busses = garage.GetAllBusses();
             foreach (var bus in busses)
             {
-                Console.WriteLine($"ID: {bus.ID}, Kapacitet: {bus.BatteryCapacity}, Forbrug: {bus.Usage}");
+                Console.WriteLine($"ID: {bus.ID}, Kapacitet: {bus.BatteryCapacity}, Forbrug: {bus.KmPerKWh}");
                 
             }
             Console.ReadKey ();

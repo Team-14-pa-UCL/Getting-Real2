@@ -3,12 +3,17 @@ classDiagram
         +string ID
         +double BatteryCapacity
         +double CurrentCharge
-        +double kmPerKwh
+        +double kmPerKWh
+        +double KmPerLiter
+        +double CurrentChargeKWh
+        +int CurrentChargePercent
+        +double ChargerSpeed
         +string Location
         +double AverageSpeed
     }
 
     class Garage {
+        -double LowBatteryTreshold
         +List<Bus> Busses
         +enum BusStatus
         +GetAllBuses() List<Bus>
