@@ -41,5 +41,34 @@ namespace Umove_AS.Services
         {
             return new List<Bus>(busses);
         }
+
+        public void SortByCurrentCharge()//DK
+        {
+        }
+
+        public void FilterBatteryStatus()//DK
+        {
+        }
+
+        public void GetBatteryStatus()//DK
+        {
+        }
+
+        public void GetBusStatus()//DK
+        {
+            foreach (var bus in busses)
+            {
+                
+            }
+        }
+
+        public void GetBatteryTimeLeft(double currentCharge, double averageSpeed)//DK
+        {
+            DateTime timeLeft = currentCharge - 
+        }
+
+        public void GetChargingTimeLeft()//DK
+        {
+        }
     }
 }

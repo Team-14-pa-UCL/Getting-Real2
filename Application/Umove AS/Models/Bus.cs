@@ -19,8 +19,10 @@ namespace Umove_AS.Models
         public string ID { get; private set; }
         public double BatteryCapacity { get; private set; }
         public double KmPerKWh { get; private set; } //DK(nyt property navn)
+        public double KmPerLiter { get; private set; } //DK
         public double CurrentCharge { get; private set; } //DK
         public string Location { get; private set; } //DK
+        public double AverageSpeed { get; private set; }//DK
         
 
 
@@ -37,28 +39,7 @@ namespace Umove_AS.Models
             KmPerKWh = newKmPerKWh;
         }
 
-        public void GetBatteryStatus()
-        {
-        }
 
-        public void FilterBatteryStatus()
-        {
-        }
 
-        public void GetBusStatus()
-        {
-        }
-
-        public void GetBatteryTimeLeft()
-        {
-        }
-
-        public void GetChargingTimeLeft()
-        {
-        }
-
-        public void SortByCurrentCharge()
-        {
-        }
     }
 }

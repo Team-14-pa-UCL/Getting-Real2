@@ -6,12 +6,6 @@ classDiagram
         +double kmPerKwh
         +string Location
         +double AverageSpeed
-        +GetBatteryStatus() void
-        +FilterBatteryStatus() void
-        +GetBusStatus() void
-        +GetBatteryTimeLeft() void
-        +GetChargingTimeLeft() void
-
     }
 
     class Garage {
@@ -24,6 +18,7 @@ classDiagram
         +GetBatteryTimeLeft() void
         +GetChargingTimeLeft() void
         +SortByCurrentCharge() void
+        +PercentageBatteryUsePerHour() void
     }
 
     class BusStatus{
