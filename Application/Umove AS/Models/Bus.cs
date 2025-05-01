@@ -6,27 +6,35 @@ using System.Threading.Tasks;
 
 namespace Umove_AS.Models
 {
+    enum BusStatus
+    {
+        Inroute,
+        Free,
+        Garage,
+        Charging,
+        Repair
+    }
     public class Bus
     {
         public string ID { get; private set; }
         public double BatteryCapacity { get; private set; }
-        public double KmPerKwh { get; private set; } //DK
+        public double KmPerKWh { get; private set; } //DK(nyt property navn)
         public double CurrentCharge { get; private set; } //DK
         public string Location { get; private set; } //DK
         
 
 
-        public Bus(string id, double batterycapacity, double usage)
+        public Bus(string id, double batterycapacity, double kmPerKWh)
         {
             ID = id;
             BatteryCapacity = batterycapacity;
-            Usage = usage;
+            KmPerKWh = kmPerKWh;
         }
 
-        public void Update(double newCapacity, double newUsage)
+        public void Update(double newCapacity, double newKmPerKWh)
         {
             BatteryCapacity = newCapacity;
-            Usage = newUsage;
+            KmPerKWh = newKmPerKWh;
         }
 
         public void GetBatteryStatus()
