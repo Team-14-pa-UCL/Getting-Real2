@@ -47,7 +47,7 @@ namespace MSTestUmove
 
             // Assert
             Assert.AreEqual(350, bus.BatteryCapacity);
-            Assert.AreEqual(2.5, bus.Usage);
+            Assert.AreEqual(2.5, bus.KmPerKWh);
         }
 
         [TestMethod]
@@ -65,7 +65,24 @@ namespace MSTestUmove
 
             // Assert
             Assert.AreEqual(0, buses.Count);
-
         }
+
+        [TestMethod]
+        public void GetBatteryTimeLeft_Correct() //DK
+        {
+            // Arrange
+            var garage = new Garage();
+
+            //Act
+            TimeSpan timeLeft = garage.GetBatteryTimeLeft(150, 25, 2.5);
+
+
+            //Assert
+            TimeSpan expectedTimeLeft = TimeSpan.FromHours(150 * 2.5 / 25);
+            Assert.AreEqual(expectedTimeLeft, timeLeft);
+        
+        }
+
+        
     }
 }

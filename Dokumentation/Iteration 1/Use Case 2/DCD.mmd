@@ -3,17 +3,17 @@ classDiagram
         +string ID
         +double BatteryCapacity
         +double CurrentCharge
-        +double kmPerKwh
+        +double kmPerKWh
+        +double KmPerLiter
+        +double CurrentChargeKWh
+        +int CurrentChargePercent
+        +double ChargerSpeed
         +string Location
-        +GetBatteryStatus() void
-        +FilterBatteryStatus() void
-        +GetBusStatus() void
-        +GetBatteryTimeLeft() void
-        +GetChargingTimeLeft() void
-        +SortByCurrentCharge() void
+        +double AverageSpeed
     }
 
     class Garage {
+        -double LowBatteryTreshold
         +List<Bus> Busses
         +enum BusStatus
         +GetAllBuses() List<Bus>
@@ -22,6 +22,8 @@ classDiagram
         +GetBusStatus() void
         +GetBatteryTimeLeft() void
         +GetChargingTimeLeft() void
+        +SortByCurrentCharge() void
+        +PercentageBatteryUsePerHour() void
     }
 
     class BusStatus{
