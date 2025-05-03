@@ -10,8 +10,9 @@ namespace MSTestUmove
         public void AddBus_AddbusSucces()
         {
             // Arrange
+            var shiftplan = new ShiftPlan("nat"); //DK tilføjet shiftplan object
             var garage = new Garage();
-            var bus = new Bus("Bus1", 300, 2.5);
+            var bus = new Bus("Bus1", 300, 2.5, shiftplan);
 
             // Act
             garage.AddBus(bus);
@@ -26,10 +27,11 @@ namespace MSTestUmove
         {
             // Arrange
             var garage = new Garage();
+            var shiftplan = new ShiftPlan("nat"); //DK tilføjet shiftplan object
 
             // Act
-            garage.AddBus(new Bus("Bus1", 300, 2.5));
-            garage.AddBus(new Bus("Bus1", 300, 2.5)); //Skal sige fejl
+            garage.AddBus(new Bus("Bus1", 300, 2.5, shiftplan));
+            garage.AddBus(new Bus("Bus1", 300, 2.5, shiftplan)); //Skal sige fejl
         }
 
         [TestMethod]
@@ -37,9 +39,10 @@ namespace MSTestUmove
         {
             // Arrange
             var garage = new Garage();
+            var shiftplan = new ShiftPlan("nat"); //DK tilføjet shiftplan object
 
             // Act
-            garage.AddBus(new Bus("Bus1", 300, 2.5));
+            garage.AddBus(new Bus("Bus1", 300, 2.5, shiftplan));
 
             garage.EditBus("Bus1", 350, 2.5);
 
@@ -55,9 +58,10 @@ namespace MSTestUmove
         {
             // Arrange
             var garage = new Garage();
+            var shiftplan = new ShiftPlan("nat"); //DK tilføjet shiftplan object
 
             // Act
-            garage.AddBus(new Bus("Bus1", 300, 2.5));
+            garage.AddBus(new Bus("Bus1", 300, 2.5,shiftplan));
 
             garage.RemoveBus("Bus1");
 
