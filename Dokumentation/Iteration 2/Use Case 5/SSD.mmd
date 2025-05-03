@@ -5,14 +5,12 @@ sequenceDiagram
     Driftsmedarbejder->>System: Valg Vagtplan til indlæsning
     System-->>Driftsmedarbejder: Vagtplan er indlæst
 
-    Driftsmedarbejder->>System: ValgBatteriStatus
-    System-->>Driftsmedarbejder: BatteriStatus
+    Driftsmedarbejder->>System: Tildel Vagtplan til Bus
+    System-->>Driftsmedarbejder: Vagtplan er tildelt til Bus
     
-    Driftsmedarbejder->>System: FilterLavBatteriStatus
-    System-->>Driftsmedarbejder: BusListeLaveBatteriStatus
+    Driftsmedarbejder->>System: Ændre Vagtplan til Bus
+    System-->>Driftsmedarbejder: Vagtplan Bus er ændret
 
-    Driftsmedarbejder->>System: Valg BusID
-    System-->>Driftsmedarbejder: Detaljeret Bus Status
+    Driftsmedarbejder->>System: Tjek Vagtplan for en Bus
+    System-->>Driftsmedarbejder: Viser Bus med Vagtplan
 
-    Driftsmedarbejder->>System: Valg Estimeret Driftstid
-    System-->>Driftsmedarbejder: Estimeret Driftstid
