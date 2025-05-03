@@ -10,7 +10,7 @@ namespace Umove_AS.Services
     public class Garage
     {
         private double LowBatteryTreshold = 20; //DK grænse for lav batteri
-        private string ShiftPlanID; //DK
+        public string ShiftPlanID; //DK
 
         private List<ShiftPlan> shiftplans = new List<ShiftPlan>();
 
@@ -24,6 +24,7 @@ namespace Umove_AS.Services
             busses.Add(bus);
             
         }
+
 
         public void EditBus(string id, double newCapacity, double newKmPerKWh)
         {
@@ -113,24 +114,24 @@ namespace Umove_AS.Services
             return batteryPercentUsePerHour;
         }
 
-        public void AddShiftPlan(Garage shiftPlanID) //DK
+        public void AddShiftPlan(ShiftPlan shiftPlan) //DK
         {
-            if (shiftplans.Exists(s => s.ShiftPlanID == shiftPlanID.ShiftPlanID)) // Tjekker om vagtplan id eksister i listen.
+            if (shiftplans.Exists(s => s.ShiftName == shiftPlan.ShiftName)) // Tjekker om vagtplan id eksister i listen.
                 throw new ArgumentException("Vagtplan med dette ID findes allerede");
             // TODO: Lav et loop
-            shiftplans.Add(shiftPlanID);
+            shiftplans.Add(shiftPlan);
         }
 
-        public void RemoveShiftPlan(string id) //DK
+        public void RemoveShiftPlan(string shiftPlan) //DK
         {
-            var shiftplan = shiftplans.FirstOrDefault(s => s.ShiftPlanID == id);
-            if (busses == null)
+            var shiftplan = shiftplans.FirstOrDefault(s => s.ShiftName == shiftPlan);
+            if (shiftplans == null)
                 throw new ArgumentException("Bus er ikke fundet");
 
             shiftplans.Remove(shiftplan);
         }
 
-        public List<Garage> GetAllShiftPlans() //DK
+        /*public List<Garage> GetAllShiftPlans() //DK
         {
             return new List<Garage>(shiftplans);
         }
@@ -141,7 +142,7 @@ namespace Umove_AS.Services
         public List<Bus> GetAllBusesWithShiftPlans() //DK Viser Vagtplanen til et bestemt BusID
         {
 
-        }
+        }*/
 
     }
 }

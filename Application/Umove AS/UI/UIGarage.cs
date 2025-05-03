@@ -25,7 +25,7 @@ namespace Umove_AS.UI
 
             try
             {
-                var shiftPlan = new ShiftPlan { ShiftName = shiftname };// DK : Create a ShiftPlan object
+                var shiftPlan = new ShiftPlan(shiftname);// DK : Create a ShiftPlan object
 
                 garage.AddBus(new Bus(id, capacity, kmPerKWh, shiftPlan));// DK : added shiftPlan to constructor
                 Console.WriteLine("Bus Oprret");
@@ -90,5 +90,43 @@ namespace Umove_AS.UI
             Console.ReadKey ();
 
         }
+
+        public void CreateShiftPlan() //DK
+        {
+            Console.Write("Vagtplan: ");
+            var shiftname = Console.ReadLine();
+
+            try
+            {
+                garage.AddShiftPlan(new ShiftPlan(shiftname));// DK : added shiftPlan to constructor
+                Console.WriteLine("VagtPlan Oprret");
+                Console.ReadKey();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.ReadKey();
+            }
+        }
+
+        public void DeleteShiftPlan()
+        {
+            Console.Write("Vagtplan: ");
+            var id = Console.ReadLine();
+
+            try
+            {
+                garage.RemoveShiftPlan(id);
+                Console.WriteLine("Vagtplan Slettet");
+                Console.ReadKey();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.ReadKey();
+            }
+        }
+
+
     }
 }

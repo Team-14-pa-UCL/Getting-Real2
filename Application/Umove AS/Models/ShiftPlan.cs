@@ -9,5 +9,10 @@ namespace Umove_AS.Models
     public class ShiftPlan
     {
         public string ShiftName { get; set; }
+
+        public ShiftPlan(string shiftName)
+        {
+            ShiftName = shiftName;
+        }
     }
 }
