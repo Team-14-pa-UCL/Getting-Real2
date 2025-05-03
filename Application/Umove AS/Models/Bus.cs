@@ -26,14 +26,16 @@ namespace Umove_AS.Models
         public TimeSpan OperationalTime { get; private set; }
         public string Location { get; private set; } //DK
         public double AverageSpeed { get; private set; }//DK
+        public ShiftPlan ShiftPlan { get; private set; }
         
 
 
-        public Bus(string id, double batterycapacity, double kmPerKWh)
+        public Bus(string id, double batterycapacity, double kmPerKWh, ShiftPlan shiftPlan)
         {
             ID = id;
             BatteryCapacity = batterycapacity;
             KmPerKWh = kmPerKWh;
+            ShiftPlan = shiftPlan;
         }
 
         public void Update(double newCapacity, double newKmPerKWh)
