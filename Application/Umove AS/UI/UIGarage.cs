@@ -19,11 +19,15 @@ namespace Umove_AS.UI
             Console.Write("BatteriKapacitet: ");
             var capacity = double.Parse(Console.ReadLine());
             Console.Write("Forbrug: ");
-            var usage = double.Parse(Console.ReadLine());
+            var kmPerKWh = double.Parse(Console.ReadLine());
+            Console.Write("Vagtplan: "); //DK
+            var shiftname = Console.ReadLine(); //DK
 
             try
             {
-                garage.AddBus(new Bus(id, capacity, usage));
+                var shiftPlan = new ShiftPlan { ShiftName = shiftname };// DK : Create a ShiftPlan object
+
+                garage.AddBus(new Bus(id, capacity, kmPerKWh, shiftPlan));// DK : added shiftPlan to constructor
                 Console.WriteLine("Bus Oprret");
                 Console.ReadKey();
             }

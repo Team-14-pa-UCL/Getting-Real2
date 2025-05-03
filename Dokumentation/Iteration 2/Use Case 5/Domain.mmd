@@ -1,11 +1,14 @@
 classDiagram
+    class ShiftPlan{
+		Shiftplan
+	}
     class Bus {
         ID
 
     }
     class Garage {
-        shiftplanID
         List Busses
         List ShiftPlans
     }
     Garage "1" --> "*" Bus
+    Bus "1" --> "*" ShiftPlan

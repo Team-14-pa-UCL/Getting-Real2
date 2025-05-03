@@ -10,6 +10,9 @@ namespace Umove_AS.Services
     public class Garage
     {
         private double LowBatteryTreshold = 20; //DK grænse for lav batteri
+        private string ShiftPlanID; //DK
+
+        private List<ShiftPlan> shiftplans = new List<ShiftPlan>();
 
         private List<Bus> busses = new List<Bus>();
 
@@ -22,12 +25,12 @@ namespace Umove_AS.Services
             
         }
 
-        public void EditBus(string id, double newCapacity, double newUsage)
+        public void EditBus(string id, double newCapacity, double newKmPerKWh)
         {
             var bus = busses.FirstOrDefault(b => b.ID == id); //Leder efter indput ID'et i listen.
             if (busses == null) throw new ArgumentException("Bus er ikke fundet");
             // TODO: Lav et loop, hvis fejl.
-            bus.Update(newCapacity, newUsage);
+            bus.Update(newCapacity, newKmPerKWh);
         }
 
         public void RemoveBus(string id)
@@ -108,6 +111,36 @@ namespace Umove_AS.Services
         {
             double batteryPercentUsePerHour = Convert.ToDouble(operationalTime) / (100 - currentChargePercent);
             return batteryPercentUsePerHour;
+        }
+
+        public void AddShiftPlan(Garage shiftPlanID) //DK
+        {
+            if (shiftplans.Exists(s => s.ShiftPlanID == shiftPlanID.ShiftPlanID)) // Tjekker om vagtplan id eksister i listen.
+                throw new ArgumentException("Vagtplan med dette ID findes allerede");
+            // TODO: Lav et loop
+            shiftplans.Add(shiftPlanID);
+        }
+
+        public void RemoveShiftPlan(string id) //DK
+        {
+            var shiftplan = shiftplans.FirstOrDefault(s => s.ShiftPlanID == id);
+            if (busses == null)
+                throw new ArgumentException("Bus er ikke fundet");
+
+            shiftplans.Remove(shiftplan);
+        }
+
+        public List<Garage> GetAllShiftPlans() //DK
+        {
+            return new List<Garage>(shiftplans);
+        }
+
+        public void UpdateBusShiftPlan() //DK Tilknytter Vagtplan til BusID
+        {
+        }
+        public List<Bus> GetAllBusesWithShiftPlans() //DK Viser Vagtplanen til et bestemt BusID
+        {
+
         }
 
     }
