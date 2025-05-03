@@ -127,6 +127,18 @@ namespace Umove_AS.UI
             }
         }
 
+        public void ShowShiftPlans()
+        {
+            var shiftplans = garage.GetAllShiftPlans();
+            foreach (var shiftplan in shiftplans)
+            {
+                Console.WriteLine($"ID: {shiftplan.ShiftName}");
+
+            }
+            Console.ReadKey();
+
+        }
+
 
     }
 }

@@ -81,7 +81,7 @@ namespace Umove_AS
             {
                 new ("Opret Vagtplan", () => uiGarage.CreateShiftPlan()),
                 new ("Slet Vagtplan",    () => uiGarage.DeleteShiftPlan()), 
-                //new ("Vis Busser",  () => uiGarage.ShowShiftPlans()), UNDER CONSTRUCTION
+                new ("Vis Busser",  () => uiGarage.ShowShiftPlans()),
             });
 
 

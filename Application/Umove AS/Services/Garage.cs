@@ -131,12 +131,12 @@ namespace Umove_AS.Services
             shiftplans.Remove(shiftplan);
         }
 
-        /*public List<Garage> GetAllShiftPlans() //DK
+        public List<ShiftPlan> GetAllShiftPlans() //DK
         {
-            return new List<Garage>(shiftplans);
+            return new List<ShiftPlan>(shiftplans);
         }
 
-        public void UpdateBusShiftPlan() //DK Tilknytter Vagtplan til BusID
+        /*public void UpdateBusShiftPlan() //DK Tilknytter Vagtplan til BusID
         {
         }
         public List<Bus> GetAllBusesWithShiftPlans() //DK Viser Vagtplanen til et bestemt BusID
