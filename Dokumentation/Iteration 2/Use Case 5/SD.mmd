@@ -5,9 +5,9 @@ sequenceDiagram
 
 	Driftsmedarbejder ->> System : Choose add Shift Plan
 	System -->> Driftsmedarbejder : Enter Shift Plan ID
-	Driftsmedarbejder ->> System : Choose File
-	System ->> BusManagementSystem : Read File
-	BusManagementSystem -->> System : File Read
+	Driftsmedarbejder ->> System : Enter Shift Plan ID
+	System ->> BusManagementSystem : Add Shift Plan ID
+	BusManagementSystem -->> System : Shift Plan ID added to ShiftPlanList
 	System -->> Driftsmedarbejder : Return Confirmation
 
 	Driftsmedarbejder -->> System : Select Shift Plan ID
@@ -17,8 +17,8 @@ sequenceDiagram
 	Driftsmedarbejder ->> System : Select <<Add Bus>> To Shift Plan ID
 	System -->> Driftsmedarbejder : Return Enter BusID
 	Driftsmedarbejder ->> System : Enter BusID
-	System ->> BusManagementSystem : Update Shift Plan with Bus
-	BusManagementSystem -->> System : Shift Plan Updated
+	System ->> BusManagementSystem : Update ShiftPlanList with BusID
+	BusManagementSystem -->> System : ShiftPlanList Updated
 	System -->> Driftsmedarbejder : Return Confirmation "Vagtplan Tildelt"
 
 	Driftsmedarbejder ->> System : Select BusID
@@ -28,7 +28,7 @@ sequenceDiagram
 	Driftsmedarbejder ->> System : Select Add Shift Plan
 	System -->> Driftsmedarbejder : Return Enter Shift PlanID
 	Driftsmedarbejder ->> System : Enter Shift PlanID
-	Sytem ->> BusManagementSystem : Update Bus with Shift PlanID
+	System ->> BusManagementSystem : Update Bus with Shift PlanID
 	BusManagementSystem -->> System : Shift Plan ID Updated
 	System -->> Driftsmedarbejder : Return Confirmation "Shift Plan Updated"
 
@@ -37,7 +37,7 @@ sequenceDiagram
 	Driftsmedarbejder ->> System : Enter BusID
 	System ->> BusManagementSystem : Select BusID
 	BusManagementSystem -->> System : BusID Selected
-	System -->> Driftsmedarbejder : Return BusStatus
+	System -->> Driftsmedarbejder : Return ShiftPlanStatus
 
 	
 

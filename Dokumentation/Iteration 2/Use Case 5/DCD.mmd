@@ -1,0 +1,11 @@
+classDiagram
+	class Bus {
+		+string BusID	
+	}
+
+	class Garage {		
+		+string ShiftPlanID	
+		+List<Garage>ShiftPlanList
+		+UpdateShiftPlan() : void
+		+GetShiftPlanStatus() : void
+	}
