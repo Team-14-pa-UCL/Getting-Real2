@@ -1,0 +1,14 @@
+classDiagram
+    class Bus {
+        +string BusId
+        +string RouteId
+        +bool Kører
+        +int BatteriNiveau
+        +double KhwPerTime
+    }
+
+    class BusService {
+        +List<Bus> Buser
+    }
+
+    BusService "1" --> "*" Bus : administrerer

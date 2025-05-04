@@ -1,11 +1,18 @@
 ﻿using Umove_AS.UI;
 using System.Collections.Generic;
+using Umove_AS.Services;
+using Umove_AS.Type;
 
 namespace Umove_AS
 {
     class Program
     {
-        private static UIGarage uiGarage = new UIGarage();
+        private static readonly BusService busService = new();
+        private static readonly ShiftPlanService shiftPlanService = new();
+        private static readonly GarageService garageService = new(busService, shiftPlanService);
+        private static readonly GarageUI garageUI = new(garageService);
+        
+
 
         /// <summary>
         /// Opretter 2 objecter, og er 2 constructore involveret. (MenuManger & standardIConsole.)
@@ -30,13 +37,14 @@ namespace Umove_AS
             "UMOVE A/S",
             new List<MenuItem>
             {
-                new ("Chauffør",        () => menu.Push(BuildDriverMenu())),
-                new ("Driftmedarbejder",() => menu.Push(BuildOperationStaffMenu())),
-                new ("IT-Medarbejder",  () => menu.Push(BuildITWorkerMenu())),
+                new ("Chauffør",            () => menu.Push(BuildDriverMenu())),
+                new ("Driftmedarbejder",    () => menu.Push(BuildOperationStaffMenu())),
+                new ("IT-Medarbejder",      () => menu.Push(BuildITWorkerMenu())),
 
                 
             }); // ); afslutter metode & constructor kaldet. Alt inde i new, er parametere.
 
+        //Alt med Chaufør menu
         private static MenuPage BuildDriverMenu() => new(
             "Chaufør",
             new List<MenuItem>
@@ -46,13 +54,14 @@ namespace Umove_AS
                 
             });
 
+        //Alt med DriftMedarbejder
         private static MenuPage BuildOperationStaffMenu() => new(
             "Driftmedarbejder",
             new List<MenuItem>
             {
                 new ("Administrer stam bus‑data",   () => menu.Push(AdminstrateBusData())),
-                new ("Overvåg batteristatus",                       PromptBatteryMonitor),
-                new ("Administrer vagtplaner",   () => menu.Push(AdministrateShiftPlans())), //DK
+                new ("Overvåg batteristatus",       () => menu.Push(ShowBatteriStatus())),
+                new ("Administrer vagtplaner",      () => menu.Push(AdministrateShiftPlans())), //DK
 
             });
 
@@ -60,11 +69,28 @@ namespace Umove_AS
             "Driftmedarbejder",
             new List<MenuItem>
             {
-                new ("Opret bus", () => uiGarage.CreateBus()),
-                new ("Rediger bus", () => uiGarage.EditBus()),
-                new ("Slet Bus",    () => uiGarage.DeleteBus()),
-                new ("Vis Busser",  () => uiGarage.ShowBusses()),
+                new ("Opret bus",           () => garageUI.CreateBus()),
+                new ("Rediger bus",         () => garageUI.EditBus()),
+                new ("Opdater bus status",  () => garageUI.UpdateBusStatus()),
+                new ("Slet bus",            () => garageUI.DeleteBus()),
+                new ("Vis busser",          () => garageUI.ShowBusses()),
             });
+
+        private static MenuPage ShowBatteriStatus() => new(//DK
+           "Driftmedarbejder",
+           new List<MenuItem>
+           {
+                new ("Vis busser", () => garageUI.ShowBusses()),
+           });
+
+        private static MenuPage AdministrateShiftPlans() => new(//DK
+           "Driftmedarbejder",
+           new List<MenuItem>
+           {
+                new ("Opret vagtplan", () => garageUI.CreateShiftPlan()),
+                new ("Slet vagtplan", () => garageUI.DeleteShiftPlan()),
+                new ("Vis vagtplaner", () => garageUI.ShowShiftPlans()),
+           });
 
         private static MenuPage BuildITWorkerMenu() => new(
             "Driftmedarbejder",
@@ -75,14 +101,7 @@ namespace Umove_AS
 
             });
 
-        private static MenuPage AdministrateShiftPlans() => new(//DK
-            "Driftmedarbejder",
-            new List<MenuItem>
-            {
-                new ("Opret Vagtplan", () => uiGarage.CreateShiftPlan()),
-                new ("Slet Vagtplan",    () => uiGarage.DeleteShiftPlan()), 
-                new ("Vis Busser",  () => uiGarage.ShowShiftPlans()),
-            });
+       
 
 
         // Dummy Prompts.. Er eksempler, og metoderne skal være Model mappen.

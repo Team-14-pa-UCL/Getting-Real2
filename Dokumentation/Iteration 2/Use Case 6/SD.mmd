@@ -1,0 +1,17 @@
+sequenceDiagram
+    participant Bruger
+    participant BusView
+    participant BusService
+    participant Bus
+
+    Bruger->>BusView: Indtast Bus-ID
+    BusView->>BusService: GetBusById(id)
+    alt Bus fundet
+        BusService->>Bus: GetStatus()
+        Bus-->>BusService: Statusdata (batteri, forbrug, status)
+        BusService-->>BusView: Returnér detaljer
+        BusView-->>Bruger: Vis busoplysninger
+    else Bus ikke fundet
+        BusService-->>BusView: null
+        BusView-->>Bruger: Fejl: Bus-ID findes ikke
+    end

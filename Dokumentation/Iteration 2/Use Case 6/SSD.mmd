@@ -1,0 +1,11 @@
+sequenceDiagram
+    participant Driftsmedarbejder
+    participant System
+
+    Driftsmedarbejder->>System: Søg bus (ID)
+    System->>System: Valider input
+    alt ID eksisterer
+        System-->>Driftsmedarbejder: Vis detaljer (ID, status, batteri m.m.)
+    else ID ugyldigt
+        System-->>Driftsmedarbejder: Fejlbesked
+    end

@@ -1,0 +1,5 @@
+flowchart TD
+    A[Vælg busstatus] --> B[Indtast bus-ID]
+    B --> C{Bus-ID fundet?}
+    C -- Ja --> D[Vis detaljer: batteri, status, driftstid]
+    C -- Nej --> E[Fejl: ID ikke fundet]
