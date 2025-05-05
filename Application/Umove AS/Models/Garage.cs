@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Umove_AS.Models;
 
-namespace Umove_AS.Services
+namespace Umove_AS.Models
 {
     public class Garage
     {
@@ -22,7 +21,7 @@ namespace Umove_AS.Services
                 throw new ArgumentException("Bus med dette ID findes allerede");
             // TODO: Lav et loop
             busses.Add(bus);
-            
+
         }
 
 
@@ -36,8 +35,8 @@ namespace Umove_AS.Services
 
         public void RemoveBus(string id)
         {
-            var bus = busses.FirstOrDefault(b =>b.ID == id);
-            if (busses == null) 
+            var bus = busses.FirstOrDefault(b => b.ID == id);
+            if (busses == null)
                 throw new ArgumentException("Bus er ikke fundet");
 
             busses.Remove(bus);
@@ -70,22 +69,22 @@ namespace Umove_AS.Services
 
         public int GetBatteryStatus(int busID)//DK -- NOTE: ???New class BusStatus including batterystatus, busname, etc
         {
-            Bus bus = busses.FirstOrDefault(b => (Convert.ToInt32(b.ID) == busID));
+            Bus bus = busses.FirstOrDefault(b => Convert.ToInt32(b.ID) == busID);
             if (bus != null)
             {
-                return (bus.CurrentChargePercent);    
+                return bus.CurrentChargePercent;
             }
             else
             {
                 throw new ArgumentException($"Bus with ID {busID} not found.");
-            }            
+            }
         }
 
         public void GetBusStatus()//DK
         {
             foreach (var bus in busses)
             {
-                
+
             }
         }
 
