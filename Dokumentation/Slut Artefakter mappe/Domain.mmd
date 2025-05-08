@@ -1,0 +1,34 @@
+classDiagram
+
+    class Bus {
+        +string BusId
+        +string RouteId
+        +bool Koerer        
+        +double KwhPerTime
+        +double BatteryCapacity
+        +double CurrentCharge
+        +double KmPerKwh
+        +string Location
+        +string BusStatus
+    }
+
+    class BusService {
+        +List<Bus> Busser
+    }
+
+    class ShiftPlan {
+        +string ShiftplanId
+        +DateTime StartTid
+        +DateTime SlutTid
+        +string Chauffoer
+    }
+
+    class Garage {
+        +List<Bus> Busser
+        +List<ShiftPlan> ShiftPlans
+    }
+
+    BusService "1" --> "*" Bus : administrerer
+    Garage "1" --> "*" Bus : indeholder
+    Garage "1" --> "*" ShiftPlan : har
+    Bus "1" --> "*" ShiftPlan : tildelt
