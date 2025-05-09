@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net9.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<UseWPF>true</UseWPF>
+		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+		<EnableDefaultPageItems>false</EnableDefaultPageItems>
+		<RootNamespace>Umove_AS_WPF</RootNamespace>
+		<AssemblyName>Umove_AS_WPF</AssemblyName>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="Images\UmoveBillede.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Resource Include="Images\UmoveBillede.png" />
+	</ItemGroup>
+
+	<!-- Automatisk inkludering af alle .cs og .xaml filer -->
+	<ItemGroup>
+		<Compile Include="**\*.cs" />
+		<Page Include="**\*.xaml" SubType="Designer" Generator="MSBuild:Compile" />
+	</ItemGroup>
+
+</Project>

@@ -1,0 +1,93 @@
+<Window x:Class="Umove_AS_WPF.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Umove_AS_WPF.Views"
+        mc:Ignorable="d"
+        Title="Bus Management System" Height="600" Width="1000"
+        WindowStartupLocation="CenterScreen">
+    
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Top Section -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <TextBlock Text="Bus Management System" 
+                     FontSize="24" 
+                     FontWeight="Bold" 
+                     Margin="0,0,0,10"/>
+            
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <TextBox x:Name="SearchBox" 
+                         Grid.Column="0"
+                         Width="200"
+                         Height="30"
+                         Margin="0,0,10,0"
+                         VerticalAlignment="Center"
+                         TextChanged="SearchBox_TextChanged"
+                         PlaceholderText="Search buses..."/>
+                
+                <Button x:Name="AddBusButton"
+                        Grid.Column="1"
+                        Content="Add New Bus"
+                        Padding="15,5"
+                        Click="AddBusButton_Click"/>
+            </Grid>
+        </StackPanel>
+
+        <!-- Main Content -->
+        <DataGrid x:Name="BusGrid"
+                  Grid.Row="1"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  SelectionMode="Single"
+                  SelectionChanged="BusGrid_SelectionChanged"
+                  Margin="0,0,0,20">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100"/>
+                <DataGridTextColumn Header="Battery Level" Binding="{Binding BatteryLevel}" Width="100"/>
+                <DataGridTextColumn Header="Location" Binding="{Binding Location}" Width="*"/>
+                <DataGridTemplateColumn Header="Actions" Width="150">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Edit" 
+                                        Margin="0,0,5,0"
+                                        Padding="10,5"
+                                        Click="EditBusButton_Click"/>
+                                <Button Content="Delete" 
+                                        Padding="10,5"
+                                        Click="DeleteBusButton_Click"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Bottom Section -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button x:Name="RefreshButton"
+                    Content="Refresh"
+                    Padding="15,5"
+                    Margin="0,0,10,0"
+                    Click="RefreshButton_Click"/>
+            <Button x:Name="ExitButton"
+                    Content="Exit"
+                    Padding="15,5"
+                    Click="ExitButton_Click"/>
+        </StackPanel>
+    </Grid>
+</Window> 
