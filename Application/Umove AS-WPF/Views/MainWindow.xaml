@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Bus Management System" Height="600" Width="1000"
         WindowStartupLocation="CenterScreen">
-    
+
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -15,19 +15,18 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Top Section -->
         <StackPanel Grid.Row="0" Margin="0,0,0,20">
             <TextBlock Text="Bus Management System" 
-                     FontSize="24" 
-                     FontWeight="Bold" 
-                     Margin="0,0,0,10"/>
-            
+                       FontSize="24" 
+                       FontWeight="Bold" 
+                       Margin="0,0,0,10"/>
+
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                
+
                 <TextBox x:Name="SearchBox" 
                          Grid.Column="0"
                          Width="200"
@@ -35,8 +34,47 @@
                          Margin="0,0,10,0"
                          VerticalAlignment="Center"
                          TextChanged="SearchBox_TextChanged"
-                         PlaceholderText="Search buses..."/>
-                
+                         Text="">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Setter Property="BorderBrush" Value="LightGray"/>
+                            <Setter Property="BorderThickness" Value="1"/>
+                            <Setter Property="Padding" Value="5,0,0,0"/>
+                            <Style.Triggers>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding Path=IsKeyboardFocusWithin, RelativeSource={RelativeSource Self}}" Value="False"/>
+                                        <Condition Binding="{Binding Path=Text, RelativeSource={RelativeSource Self}}" Value=""/>
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="Background">
+                                        <Setter.Value>
+                                            <VisualBrush AlignmentX="Left" AlignmentY="Center" Stretch="None">
+                                                <VisualBrush.Visual>
+                                                    <TextBlock Text="Search buses..." Foreground="Gray" Margin="5,0,0,0"/>
+                                                </VisualBrush.Visual>
+                                            </VisualBrush>
+                                        </Setter.Value>
+                                    </Setter>
+                                </MultiDataTrigger>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding Path=IsKeyboardFocusWithin, RelativeSource={RelativeSource Self}}" Value="True"/>
+                                        <Condition Binding="{Binding Path=Text, RelativeSource={RelativeSource Self}}" Value=""/>
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="Background" Value="White"/>
+                                </MultiDataTrigger>
+                                <DataTrigger Binding="{Binding Path=Text, RelativeSource={RelativeSource Self}}" Value="">
+                                    <DataTrigger.Setters>
+                                    </DataTrigger.Setters>
+                                    <DataTrigger.ExitActions>
+                                        <Setter Property="Background" Value="White"/>
+                                    </DataTrigger.ExitActions>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+
                 <Button x:Name="AddBusButton"
                         Grid.Column="1"
                         Content="Add New Bus"
@@ -45,7 +83,6 @@
             </Grid>
         </StackPanel>
 
-        <!-- Main Content -->
         <DataGrid x:Name="BusGrid"
                   Grid.Row="1"
                   AutoGenerateColumns="False"
@@ -77,7 +114,6 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <!-- Bottom Section -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button x:Name="RefreshButton"
                     Content="Refresh"
@@ -90,4 +126,4 @@
                     Click="ExitButton_Click"/>
         </StackPanel>
     </Grid>
-</Window> 
+</Window>
