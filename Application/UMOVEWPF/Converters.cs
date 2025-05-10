@@ -6,8 +6,15 @@ using System.Windows.Media;
 
 namespace UMOVEWPF
 {
+    /// <summary>
+    /// Konverterer null til Visibility.Collapsed og ikke-null til Visibility.Visible.
+    /// Bruges til at skjule/visse UI-elementer baseret på binding.
+    /// </summary>
     public class NullToVisibilityConverter : IValueConverter
     {
+        /// <summary>
+        /// Returnerer Collapsed hvis value er null, ellers Visible.
+        /// </summary>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return value == null ? Visibility.Collapsed : Visibility.Visible;
@@ -19,6 +26,10 @@ namespace UMOVEWPF
         }
     }
 
+    /// <summary>
+    /// Konverterer en bool til en farve (rød hvis kritisk, grøn ellers).
+    /// Bruges til at farve tekst eller indikatorer i UI.
+    /// </summary>
     public class BoolToColorConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -36,6 +47,9 @@ namespace UMOVEWPF
         }
     }
 
+    /// <summary>
+    /// Konverterer en enum-type til en liste af værdier, så de kan bruges i ComboBox.
+    /// </summary>
     public class EnumToListConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -55,6 +69,10 @@ namespace UMOVEWPF
         }
     }
 
+    /// <summary>
+    /// Konverterer batteriniveau (double) til en farve til brug i ProgressBar.
+    /// Grøn: >60%, Gul: 30-60%, Rød: 13-30%, Sort: <13%.
+    /// </summary>
     public class ProgressBarColorConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

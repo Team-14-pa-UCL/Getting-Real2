@@ -11,6 +11,9 @@ namespace UMOVEWPF
     /// </summary>
     public partial class MainWindow : Window
     {
+        /// <summary>
+        /// Variabler til at holde styr på sorteringsretning for hver kolonne
+        /// </summary>
         private bool _sortByIdDescending = true;
         private bool _sortByRouteDescending = true;
         private bool _sortByBatteryDescending = true;
@@ -19,13 +22,22 @@ namespace UMOVEWPF
         private string _sortedColumn = "";
         private bool _isSortDescending = true;
 
+        /// <summary>
+        /// Nem adgang til ViewModel via DataContext
+        /// </summary>
         private MainViewModel ViewModel => DataContext as MainViewModel;
 
+        /// <summary>
+        /// Initialiserer vinduet
+        /// </summary>
         public MainWindow()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Opdaterer sorteringsikoner på kolonneoverskrifter
+        /// </summary>
         private void UpdateSortIcons()
         {
             BtnSortId.Content = _sortedColumn == "ID" ? $"ID {(_isSortDescending ? "▼" : "▲")}" : "ID";
@@ -35,8 +47,12 @@ namespace UMOVEWPF
             BtnSortInService.Content = _sortedColumn == "I drift" ? $"I drift {(_isSortDescending ? "▼" : "▲")}" : "I drift";
         }
 
+        /// <summary>
+        /// Sorterer busser efter ID når kolonneoverskriften klikkes
+        /// </summary>
         private void SortByBusId_Click(object sender, RoutedEventArgs e)
         {
+            // Sorter listen og opdater ViewModel
             var sorted = _sortByIdDescending
                 ? ViewModel.Buses.OrderByDescending(b => b.BusId).ToList()
                 : ViewModel.Buses.OrderBy(b => b.BusId).ToList();
@@ -49,6 +65,9 @@ namespace UMOVEWPF
             UpdateSortIcons();
         }
 
+        /// <summary>
+        /// Sorterer busser efter rute
+        /// </summary>
         private void SortByRoute_Click(object sender, RoutedEventArgs e)
         {
             var sorted = _sortByRouteDescending
@@ -63,6 +82,9 @@ namespace UMOVEWPF
             UpdateSortIcons();
         }
 
+        /// <summary>
+        /// Sorterer busser efter batteriniveau
+        /// </summary>
         private void SortByBattery_Click(object sender, RoutedEventArgs e)
         {
             var sorted = _sortByBatteryDescending
@@ -77,6 +99,9 @@ namespace UMOVEWPF
             UpdateSortIcons();
         }
 
+        /// <summary>
+        /// Sorterer busser efter status
+        /// </summary>
         private void SortByStatus_Click(object sender, RoutedEventArgs e)
         {
             var sorted = _sortByStatusDescending
@@ -91,6 +116,9 @@ namespace UMOVEWPF
             UpdateSortIcons();
         }
 
+        /// <summary>
+        /// Sorterer busser efter om de er i drift
+        /// </summary>
         private void SortByInService_Click(object sender, RoutedEventArgs e)
         {
             var sorted = _sortByInServiceDescending

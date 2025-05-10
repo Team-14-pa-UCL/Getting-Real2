@@ -9,21 +9,25 @@ using System.IO;
 
 namespace UMOVEWPF
 {
+    /// <summary>
+    /// MainViewModel håndterer al forretningslogik og data-binding for hovedvinduet.
+    /// Indeholder bus-liste, kommandoer og logik for filtrering, sortering og opdatering.
+    /// </summary>
     public class MainViewModel : INotifyPropertyChanged
     {
-        public ObservableCollection<Bus> Buses { get; set; } = new ObservableCollection<Bus>();
+        public ObservableCollection<Bus> Buses { get; set; } = new ObservableCollection<Bus>(); // Liste over alle busser, som vises i UI'et
         private Bus _selectedBus;
         public Bus SelectedBus
         {
             get => _selectedBus;
-            set { _selectedBus = value; OnPropertyChanged(); }
+            set { _selectedBus = value; OnPropertyChanged(); } // Den bus, der aktuelt er valgt i UI'et
         }
 
         private string _currentView = "Bus Administration";
         public string CurrentView
         {
             get => _currentView;
-            set { _currentView = value; OnPropertyChanged(); }
+            set { _currentView = value; OnPropertyChanged(); } // Viser hvilken "side" brugeren er på
         }
 
         private bool _showOnlyCritical;
@@ -34,7 +38,7 @@ namespace UMOVEWPF
             { 
                 _showOnlyCritical = value; 
                 OnPropertyChanged();
-                FilterBuses();
+                FilterBuses(); // Filtrerer listen hvis kun kritiske busser skal vises
             }
         }
 
@@ -45,25 +49,25 @@ namespace UMOVEWPF
             set { _showOnlyCriticalToggle = value; OnPropertyChanged(); FilterBuses(); OnPropertyChanged(nameof(CriticalButtonText)); }
         }
 
-        public string CriticalButtonText => ShowOnlyCriticalToggle ? "Se alle busser" : "Se kun kritiske busser";
+        public string CriticalButtonText => ShowOnlyCriticalToggle ? "Se alle busser" : "Se kun kritiske busser"; // Tekst til filter-knap
 
         private string _batteryLevelInput;
         public string BatteryLevelInput
         {
             get => _batteryLevelInput;
-            set { _batteryLevelInput = value; OnPropertyChanged(); }
+            set { _batteryLevelInput = value; OnPropertyChanged(); } // Inputfelt til manuel batteriopdatering
         }
 
-        public ICommand AddBusCommand { get; }
-        public ICommand EditBusCommand { get; }
-        public ICommand RemoveBusCommand { get; }
-        public ICommand ShowBusAdminCommand { get; }
-        public ICommand ShowBatteryStatusCommand { get; }
-        public ICommand ShowCriticalBusesCommand { get; }
-        public ICommand ShowChargingPlanCommand { get; }
-        public ICommand UpdateBatteryStatusCommand { get; }
-        public ICommand UpdateBatteryLevelCommand { get; }
-        public ICommand ToggleCriticalBusesCommand { get; }
+        public ICommand AddBusCommand { get; } // Kommando til at tilføje en ny bus
+        public ICommand EditBusCommand { get; } // Kommando til at redigere valgt bus
+        public ICommand RemoveBusCommand { get; } // Kommando til at fjerne valgt bus
+        public ICommand ShowBusAdminCommand { get; } // Kommando til at vise busadministration
+        public ICommand ShowBatteryStatusCommand { get; } // Kommando til at vise batteristatus
+        public ICommand ShowCriticalBusesCommand { get; } // Kommando til at vise kritiske busser
+        public ICommand ShowChargingPlanCommand { get; } // Kommando til at vise opladningsplan
+        public ICommand UpdateBatteryStatusCommand { get; } // Kommando til at simulere batteriforbrug
+        public ICommand UpdateBatteryLevelCommand { get; } // Kommando til at opdatere batteriniveau manuelt
+        public ICommand ToggleCriticalBusesCommand { get; } // Kommando til at skifte filter for kritiske busser
 
         private readonly string _busFilePath = "buses.txt";
 
@@ -96,7 +100,7 @@ namespace UMOVEWPF
                 Buses.Add(new Bus { BusId = "BUS010", Year = "2022", BatteryCapacity = 393, Consumption = 2.0, Route = RouteName._11, BatteryLevel = 70 });
                 SaveBuses();
             }
-            // Lyt til ændringer på alle busser
+            // Lyt til ændringer på alle busser for autosave
             foreach (var bus in Buses)
                 bus.PropertyChanged += Bus_PropertyChanged;
             Buses.CollectionChanged += (s, e) =>
@@ -127,7 +131,7 @@ namespace UMOVEWPF
         private void ShowBusAdmin()
         {
             CurrentView = "Bus Administration";
-            ShowOnlyCritical = false;
+            ShowOnlyCritical = false; // Nulstil filter
         }
 
         private void ShowBatteryStatus()
@@ -148,6 +152,9 @@ namespace UMOVEWPF
             ShowOnlyCritical = false;
         }
 
+        /// <summary>
+        /// Filtrerer busserne, så kun kritiske vises (batteri < 30%)
+        /// </summary>
         private void FilterBuses()
         {
             if (ShowOnlyCriticalToggle)
@@ -165,6 +172,9 @@ namespace UMOVEWPF
             }
         }
 
+        /// <summary>
+        /// Simulerer batteriforbrug for busser i drift og viser advarsel hvis lavt batteri
+        /// </summary>
         private void UpdateBatteryStatus()
         {
             foreach (var bus in Buses)
@@ -181,6 +191,9 @@ namespace UMOVEWPF
             }
         }
 
+        /// <summary>
+        /// Opdaterer batteriniveau manuelt for valgt bus
+        /// </summary>
         private void UpdateBatteryLevel()
         {
             if (SelectedBus == null) return;
@@ -199,6 +212,9 @@ namespace UMOVEWPF
             }
         }
 
+        /// <summary>
+        /// Tilføjer en ny bus til listen
+        /// </summary>
         private void AddBus()
         {
             var win = new AddEditBusWindow();
@@ -209,6 +225,9 @@ namespace UMOVEWPF
             }
         }
 
+        /// <summary>
+        /// Redigerer den valgte bus
+        /// </summary>
         private void EditBus()
         {
             if (SelectedBus == null) return;
@@ -225,6 +244,9 @@ namespace UMOVEWPF
             }
         }
 
+        /// <summary>
+        /// Fjerner den valgte bus
+        /// </summary>
         private void RemoveBus()
         {
             if (SelectedBus == null) return;
@@ -236,6 +258,9 @@ namespace UMOVEWPF
             }
         }
 
+        /// <summary>
+        /// Gemmer alle busser til fil
+        /// </summary>
         private void SaveBuses()
         {
             using (var sw = new StreamWriter(_busFilePath, false))
@@ -247,6 +272,9 @@ namespace UMOVEWPF
             }
         }
 
+        /// <summary>
+        /// Loader busser fra fil
+        /// </summary>
         private void LoadBuses()
         {
             Buses.Clear();
@@ -271,12 +299,21 @@ namespace UMOVEWPF
             }
         }
 
+        /// <summary>
+        /// Skifter filter for kritiske busser
+        /// </summary>
         private void ToggleCriticalBuses()
         {
             ShowOnlyCriticalToggle = !ShowOnlyCriticalToggle;
         }
 
+        /// <summary>
+        /// Event for property changed (INotifyPropertyChanged)
+        /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
+        /// <summary>
+        /// Kaldes når en property ændres, så UI opdateres
+        /// </summary>
         protected void OnPropertyChanged([CallerMemberName] string name = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }

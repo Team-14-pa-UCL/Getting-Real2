@@ -5,6 +5,9 @@ using UMOVEWPF;
 
 namespace UMOVEWPF
 {
+    /// <summary>
+    /// Modelklasse for en bus, med alle relevante egenskaber og notifikationer til UI.
+    /// </summary>
     public enum RouteName
     {
         None,
@@ -13,8 +16,13 @@ namespace UMOVEWPF
         _85
     }
 
+    /// <summary>
+    /// Repræsenterer en bus og dens egenskaber.
+    /// Implementerer INotifyPropertyChanged for at UI kan opdatere automatisk.
+    /// </summary>
     public class Bus : INotifyPropertyChanged
     {
+        // Unikt ID for bussen
         private string _busId;
         public string BusId
         {
@@ -22,6 +30,7 @@ namespace UMOVEWPF
             set { _busId = value; OnPropertyChanged(); OnPropertyChanged(nameof(DisplayText)); }
         }
 
+        // Modelnavn (kan evt. fjernes hvis ikke brugt)
         private string _model;
         public string Model
         {
@@ -29,6 +38,7 @@ namespace UMOVEWPF
             set { _model = value; OnPropertyChanged(); OnPropertyChanged(nameof(DisplayText)); }
         }
 
+        // Produktionsår
         private string _year;
         public string Year
         {
@@ -36,6 +46,7 @@ namespace UMOVEWPF
             set { _year = value; OnPropertyChanged(); OnPropertyChanged(nameof(DisplayText)); }
         }
 
+        // Batterikapacitet i kWh
         private double _batteryCapacity;
         public double BatteryCapacity
         {
@@ -43,6 +54,7 @@ namespace UMOVEWPF
             set { _batteryCapacity = value; OnPropertyChanged(); OnPropertyChanged(nameof(DisplayText)); }
         }
 
+        // Nuværende batteriniveau i procent
         private double _batteryLevel;
         public double BatteryLevel
         {
@@ -57,6 +69,7 @@ namespace UMOVEWPF
             }
         }
 
+        // Forbrug i kWh/km
         private double _consumption;
         public double Consumption
         {
@@ -64,6 +77,7 @@ namespace UMOVEWPF
             set { _consumption = value; OnPropertyChanged(); OnPropertyChanged(nameof(DisplayText)); }
         }
 
+        // Sidste opdateringstidspunkt
         private DateTime _lastUpdate;
         public DateTime LastUpdate
         {
@@ -71,6 +85,7 @@ namespace UMOVEWPF
             set { _lastUpdate = value; OnPropertyChanged(); OnPropertyChanged(nameof(DisplayText)); }
         }
 
+        // Status for bussen (enum)
         private BusStatus _status;
         public BusStatus Status
         {
@@ -78,10 +93,17 @@ namespace UMOVEWPF
             set { _status = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Angiver om bussen er kritisk (batteri < 20%)
+        /// </summary>
         public bool IsCritical => BatteryLevel < 20;
 
+        /// <summary>
+        /// Tekst til visning i lister mv.
+        /// </summary>
         public string DisplayText => $"{BusId} | {Model} | {BatteryLevel:F1}%";
 
+        // Rute som bussen kører på
         private RouteName _route;
         public RouteName Route
         {
@@ -89,9 +111,18 @@ namespace UMOVEWPF
             set { _route = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Angiver om bussen er i drift (bruges til sortering/filter)
+        /// </summary>
         public bool IsInService => Status == BusStatus.Inroute || Status == BusStatus.Intercept || Status == BusStatus.Return;
 
+        /// <summary>
+        /// Event for property changed (INotifyPropertyChanged)
+        /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
+        /// <summary>
+        /// Kaldes når en property ændres, så UI opdateres
+        /// </summary>
         protected void OnPropertyChanged([CallerMemberName] string name = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
