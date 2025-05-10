@@ -1,0 +1,3 @@
+<!-- BusId Header -->
+<TextBlock Grid.Column="0" Text="ID" FontWeight="Bold" />
+<Button Grid.Column="0" Content="Sort by ID" Click="SortByBusId_Click" /> 

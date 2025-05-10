@@ -9,7 +9,11 @@ namespace UMOVEWPF
         public AddEditBusWindow()
         {
             InitializeComponent();
-            Bus = new Bus();
+            Bus = new Bus
+            {
+                BatteryLevel = 100,
+                Status = BusStatus.Garage
+            };
             DataContext = Bus;
         }
 
@@ -19,19 +23,16 @@ namespace UMOVEWPF
             Bus = new Bus
             {
                 BusId = busToEdit.BusId,
-                Model = busToEdit.Model,
-                Year = busToEdit.Year
+                Year = busToEdit.Year,
+                BatteryCapacity = busToEdit.BatteryCapacity,
+                Consumption = busToEdit.Consumption,
+                Route = busToEdit.Route
             };
-            BusIdTextBox.Text = Bus.BusId;
-            ModelTextBox.Text = Bus.Model;
-            YearTextBox.Text = Bus.Year;
+            DataContext = Bus;
         }
 
-        private void Save_Click(object sender, RoutedEventArgs e)
+        private void OnSave(object sender, RoutedEventArgs e)
         {
-            Bus.BusId = BusIdTextBox.Text;
-            Bus.Model = ModelTextBox.Text;
-            Bus.Year = YearTextBox.Text;
             DialogResult = true;
             Close();
         }
