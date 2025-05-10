@@ -11,9 +11,14 @@ namespace UMOVEWPF.Models
     public enum RouteName
     {
         None,
-        _11,
-        _8A,
-        _85
+        R1A,
+        R10,
+        R11,
+        R13,
+        R132,
+        R133,
+        R137,
+        R139
     }
 
     /// <summary>
@@ -114,7 +119,7 @@ namespace UMOVEWPF.Models
         /// <summary>
         /// Angiver om bussen er i drift (bruges til sortering/filter)
         /// </summary>
-        public bool IsInService => Status == BusStatus.Inroute || Status == BusStatus.Intercept || Status == BusStatus.Return;
+        public bool IsInService => Status == BusStatus.Inroute || Status == BusStatus.Intercept || Status == BusStatus.Returning;
 
         /// <summary>
         /// Event for property changed (INotifyPropertyChanged)

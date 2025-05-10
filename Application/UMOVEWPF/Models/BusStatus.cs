@@ -8,33 +8,18 @@ namespace UMOVEWPF.Models
     /// </summary>
     public enum BusStatus
     {
-        /// <summary>
-        /// Bussen er i rute (kører passagerer)
-        /// </summary>
         Inroute,
-        /// <summary>
-        /// På vej til at erstatte en anden bus
-        /// </summary>
+        
         Intercept, // Status for, hvis den er på vej til at erstatte en anden bus.
-        /// <summary>
-        /// På vej tilbage til garage
-        /// </summary>
-        Return,
-        /// <summary>
-        /// Fri/ledig
-        /// </summary>
+        
+        Returning, // Bus der er blevet aflyst og på vej tilbage for at charge.
+        
         Free,
-        /// <summary>
-        /// Holder i garage
-        /// </summary>
+        
         Garage,
-        /// <summary>
-        /// Lader op
-        /// </summary>
+        
         Charging,
-        /// <summary>
-        /// Til reparation
-        /// </summary>
+        
         Repair
     }
 } 

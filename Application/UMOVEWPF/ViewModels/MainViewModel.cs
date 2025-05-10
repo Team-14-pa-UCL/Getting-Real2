@@ -92,16 +92,16 @@ namespace UMOVEWPF.ViewModels
             if (Buses.Count == 0)
             {
                 // Simuler nogle test-data hvis filen ikke fandtes
-                Buses.Add(new Bus { BusId = "BUS001", Year = "2023", BatteryCapacity = 393, Consumption = 1.2, Route = RouteName._11, BatteryLevel = 85 });
-                Buses.Add(new Bus { BusId = "BUS002", Year = "2022", BatteryCapacity = 393, Consumption = 2.0, Route = RouteName._8A, BatteryLevel = 45 });
-                Buses.Add(new Bus { BusId = "BUS003", Year = "2023", BatteryCapacity = 393, Consumption = 1.2, Route = RouteName._85, BatteryLevel = 15 });
-                Buses.Add(new Bus { BusId = "BUS004", Year = "2021", BatteryCapacity = 393, Consumption = 2.0, Route = RouteName._11, BatteryLevel = 60 });
-                Buses.Add(new Bus { BusId = "BUS005", Year = "2020", BatteryCapacity = 393, Consumption = 1.2, Route = RouteName._8A, BatteryLevel = 30 });
-                Buses.Add(new Bus { BusId = "BUS006", Year = "2022", BatteryCapacity = 393, Consumption = 2.0, Route = RouteName._85, BatteryLevel = 10 });
-                Buses.Add(new Bus { BusId = "BUS007", Year = "2023", BatteryCapacity = 393, Consumption = 1.2, Route = RouteName._11, BatteryLevel = 99 });
-                Buses.Add(new Bus { BusId = "BUS008", Year = "2021", BatteryCapacity = 393, Consumption = 2.0, Route = RouteName._8A, BatteryLevel = 55 });
-                Buses.Add(new Bus { BusId = "BUS009", Year = "2020", BatteryCapacity = 393, Consumption = 1.2, Route = RouteName._85, BatteryLevel = 22 });
-                Buses.Add(new Bus { BusId = "BUS010", Year = "2022", BatteryCapacity = 393, Consumption = 2.0, Route = RouteName._11, BatteryLevel = 70 });
+                Buses.Add(new Bus { BusId = "BUS001", Year = "2023", BatteryCapacity = 393, Consumption = 1.2, Route = RouteName.R1A, BatteryLevel = 85 });
+                Buses.Add(new Bus { BusId = "BUS002", Year = "2022", BatteryCapacity = 393, Consumption = 2.0, Route = RouteName.R11, BatteryLevel = 45 });
+                Buses.Add(new Bus { BusId = "BUS003", Year = "2023", BatteryCapacity = 393, Consumption = 1.2, Route = RouteName.R1A, BatteryLevel = 15 });
+                Buses.Add(new Bus { BusId = "BUS004", Year = "2021", BatteryCapacity = 393, Consumption = 2.0, Route = RouteName.R13, BatteryLevel = 60 });
+                Buses.Add(new Bus { BusId = "BUS005", Year = "2020", BatteryCapacity = 393, Consumption = 1.2, Route = RouteName.R137, BatteryLevel = 30 });
+                Buses.Add(new Bus { BusId = "BUS006", Year = "2022", BatteryCapacity = 393, Consumption = 2.0, Route = RouteName.R1A, BatteryLevel = 10 });
+                Buses.Add(new Bus { BusId = "BUS007", Year = "2023", BatteryCapacity = 393, Consumption = 1.2, Route = RouteName.R139, BatteryLevel = 99 });
+                Buses.Add(new Bus { BusId = "BUS008", Year = "2021", BatteryCapacity = 393, Consumption = 2.0, Route = RouteName.R139, BatteryLevel = 55 });
+                Buses.Add(new Bus { BusId = "BUS009", Year = "2020", BatteryCapacity = 393, Consumption = 1.2, Route = RouteName.R1A, BatteryLevel = 22 });
+                Buses.Add(new Bus { BusId = "BUS010", Year = "2022", BatteryCapacity = 393, Consumption = 2.0, Route = RouteName.R10, BatteryLevel = 70 });
                 SaveBuses();
             }
             // Lyt til ændringer på alle busser for autosave
@@ -183,7 +183,7 @@ namespace UMOVEWPF.ViewModels
         {
             foreach (var bus in Buses)
             {
-                if (bus.Status == BusStatus.Inroute || bus.Status == BusStatus.Intercept || bus.Status == BusStatus.Return)
+                if (bus.Status == BusStatus.Inroute || bus.Status == BusStatus.Intercept || bus.Status == BusStatus.Returning)
                 {
                     bus.BatteryLevel -= new Random().Next(1, 5);
                     bus.LastUpdate = DateTime.Now;

@@ -21,6 +21,7 @@
     <Window.DataContext>
         <viewmodels:MainViewModel/>
     </Window.DataContext>
+    <!-- Indeling i kolonner og rækker -->
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="180"/>
@@ -31,10 +32,9 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Venstre panel: Navigation og logo -->
+        <!-- Venstre panel: Navigation og logo (Skal justeres) -->
         <StackPanel Grid.Column="0" Grid.RowSpan="2" Background="#F7F7F7">
-            <Image Source="/UMOVEWPF;component/Images/UmoveBillede.png" Height="60" Margin="10"/>
-            <!-- Gendan knappen til Bus Administration -->
+            <Image Source="/UMOVEWPF;component/Images/UmoveBillede.png" Height="60" Margin="10"/>            
             <Button Content="Bus Administration" Margin="10,20,10,0" Height="35" Command="{Binding ShowBusAdminCommand}"/>
             <Button Content="Batteri Status" Margin="10,10,10,0" Height="35" Command="{Binding ShowBatteryStatusCommand}"/>
             <Button Content="Kritiske Busser" Margin="10,10,10,0" Height="35" Command="{Binding ShowCriticalBusesCommand}"/>
@@ -48,13 +48,13 @@
             </Grid>
         </Border>
 
-        <!-- Højre: Busliste og detaljer -->
+        <!-- Højre: Indeling af space på busliste og detaljer -->
         <Grid Grid.Column="1" Grid.Row="1" Margin="0,30,20,20">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="3*"/>
                 <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
-            <!-- Busliste og knapper -->
+            <!-- Busliste og knapper i Grid 0 -->
             <StackPanel Grid.Column="0">
                 <!-- Knapper til handlinger -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,0,15">
@@ -64,7 +64,7 @@
                     <Button Content="Remove Bus" Width="110" Height="35" Background="#B2001D" Foreground="White" FontWeight="Bold" Margin="0,0,10,0" BorderBrush="Black" BorderThickness="1" Command="{Binding RemoveBusCommand}" Opacity="{Binding SelectedBus, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Opacity}"/>
                     <Button Content="{Binding CriticalButtonText}" Width="170" Height="35" Background="#FF9900" Foreground="White" FontWeight="Bold" Command="{Binding ToggleCriticalBusesCommand}"/>
                 </StackPanel>
-                <!-- Kolonneoverskrifter med sortering -->
+                <!-- Kolonneoverskrifter for listen med sortering -->
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="60"/>
@@ -73,14 +73,14 @@
                         <ColumnDefinition Width="120"/>
                         <ColumnDefinition Width="100"/>
                     </Grid.ColumnDefinitions>
-                    <!-- Sorteringsknapper -->
+                    <!-- Sorteringsknapper ved tryk -->
                     <Button x:Name="BtnSortId" Grid.Column="0" Content="ID" FontWeight="Bold" Margin="5" Background="Transparent" BorderBrush="Transparent" Cursor="Hand" Click="SortByBusId_Click"/>
                     <Button x:Name="BtnSortRoute" Grid.Column="1" Content="Rute" FontWeight="Bold" Margin="5" Background="Transparent" BorderBrush="Transparent" Cursor="Hand" Click="SortByRoute_Click"/>
                     <Button x:Name="BtnSortBattery" Grid.Column="2" Content="Batteri" FontWeight="Bold" Margin="5" Background="Transparent" BorderBrush="Transparent" Cursor="Hand" Click="SortByBattery_Click"/>
                     <Button x:Name="BtnSortStatus" Grid.Column="3" Content="Status" FontWeight="Bold" Margin="5" Background="Transparent" BorderBrush="Transparent" Cursor="Hand" Click="SortByStatus_Click"/>
                     <Button x:Name="BtnSortInService" Grid.Column="4" Content="I drift" FontWeight="Bold" Margin="5" Background="Transparent" BorderBrush="Transparent" Cursor="Hand" Click="SortByInService_Click"/>
                 </Grid>
-                <!-- Liste over busser -->
+                <!-- Liste over busser i selve boxen -->
                 <ListBox ItemsSource="{Binding Buses}" SelectedItem="{Binding SelectedBus, Mode=TwoWay}" Height="350">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
@@ -113,7 +113,7 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
             </StackPanel>
-            <!-- Detaljeret Batteristatus til højre -->
+            <!-- Detaljeret Batteristatus til højre. (Ny grid) -->
             <Border Grid.Column="1" Padding="20" Background="#F7F7F7" CornerRadius="10" Margin="20,0,0,0">
                 <StackPanel>
                     <TextBlock Text="Detaljeret Batteristatus" FontSize="18" FontWeight="Bold" Margin="0,0,0,15"/>
