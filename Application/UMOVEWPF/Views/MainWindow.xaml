@@ -1,0 +1,224 @@
+﻿<!-- Hovedvindue for Umove AS busadministration. Indeholder navigation, busliste og detaljer. -->
+<Window x:Class="UMOVEWPF.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UMOVEWPF.Views"
+        xmlns:models="clr-namespace:UMOVEWPF.Models"
+        xmlns:viewmodels="clr-namespace:UMOVEWPF.ViewModels"
+        xmlns:conv="clr-namespace:UMOVEWPF.Converters"
+        mc:Ignorable="d"
+        Title="Umove AS" Height="700" Width="1400" Background="White">
+    <!-- Ressourcer: Converters til binding og farver -->
+    <Window.Resources>
+        <conv:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <conv:BoolToColorConverter x:Key="BoolToColorConverter"/>
+        <conv:EnumToListConverter x:Key="EnumToListConverter"/>
+        <conv:ProgressBarColorConverter x:Key="ProgressBarColorConverter"/>
+    </Window.Resources>
+    <!-- Sætter DataContext til MainViewModel -->
+    <Window.DataContext>
+        <viewmodels:MainViewModel/>
+    </Window.DataContext>
+    <!-- Indeling i kolonner og rækker -->
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="180"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Venstre panel: Navigation og logo (Skal justeres) -->
+        <StackPanel Grid.Column="0" Grid.RowSpan="2" Background="#F7F7F7">
+            <Image Source="/UMOVEWPF;component/Images/UmoveBillede.png" Height="60" Margin="10"/>            
+            <Button Content="Bus Administration" Margin="10,20,10,0" Height="35" Command="{Binding ShowBusAdminCommand}"/>
+            <Button Content="Batteri Status" Margin="10,10,10,0" Height="35" Command="{Binding ShowBatteryStatusCommand}"/>
+            <Button Content="Kritiske Busser" Margin="10,10,10,0" Height="35" Command="{Binding ShowCriticalBusesCommand}"/>
+            <Button Content="Opladningsplan" Margin="10,10,10,0" Height="35" Command="{Binding ShowChargingPlanCommand}"/>
+        </StackPanel>
+
+        <!-- Topbar: Viser nuværende "side" -->
+        <Border Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" Background="White" Height="80">
+            <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="Bus Administration" FontSize="32" Foreground="#FF9900" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+
+        <!-- Højre: Indeling af space på busliste og detaljer -->
+        <Grid Grid.Column="1" Grid.Row="1" Margin="0,30,20,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <!-- Busliste og knapper i Grid 0 -->
+            <StackPanel Grid.Column="0">
+                <!-- Knapper til handlinger -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,0,15">
+                    <Button Content="Add Bus" Width="110" Height="35" Background="#FF9900" Foreground="White" FontWeight="Bold" Margin="0,0,10,0" Command="{Binding AddBusCommand}"/>
+                    <Button Content="Simulate" Width="110" Height="35" Background="#FF9900" Foreground="White" FontWeight="Bold" Margin="0,0,10,0" Command="{Binding UpdateBatteryStatusCommand}"/>
+                    <Button Content="Edit Bus" Width="110" Height="35" Background="#005A9E" Foreground="White" FontWeight="Bold" Margin="0,0,10,0" BorderBrush="Black" BorderThickness="1" Command="{Binding EditBusCommand}" Opacity="{Binding SelectedBus, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Opacity}"/>
+                    <Button Content="Remove Bus" Width="110" Height="35" Background="#B2001D" Foreground="White" FontWeight="Bold" Margin="0,0,10,0" BorderBrush="Black" BorderThickness="1" Command="{Binding RemoveBusCommand}" Opacity="{Binding SelectedBus, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Opacity}"/>
+                    <Button Content="{Binding CriticalButtonText}" Width="170" Height="35" Background="#FF9900" Foreground="White" FontWeight="Bold" Command="{Binding ToggleCriticalBusesCommand}"/>
+                </StackPanel>
+                <!-- Kolonneoverskrifter for listen med sortering -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="100"/>
+                    </Grid.ColumnDefinitions>
+                    <!-- Sorteringsknapper ved tryk -->
+                    <Button x:Name="BtnSortId" Grid.Column="0" Content="ID" FontWeight="Bold" Margin="5" Background="Transparent" BorderBrush="Transparent" Cursor="Hand" Click="SortByBusId_Click"/>
+                    <Button x:Name="BtnSortRoute" Grid.Column="1" Content="Rute" FontWeight="Bold" Margin="5" Background="Transparent" BorderBrush="Transparent" Cursor="Hand" Click="SortByRoute_Click"/>
+                    <Button x:Name="BtnSortBattery" Grid.Column="2" Content="Batteri" FontWeight="Bold" Margin="5" Background="Transparent" BorderBrush="Transparent" Cursor="Hand" Click="SortByBattery_Click"/>
+                    <Button x:Name="BtnSortStatus" Grid.Column="3" Content="Status" FontWeight="Bold" Margin="5" Background="Transparent" BorderBrush="Transparent" Cursor="Hand" Click="SortByStatus_Click"/>
+                    <Button x:Name="BtnSortInService" Grid.Column="4" Content="I drift" FontWeight="Bold" Margin="5" Background="Transparent" BorderBrush="Transparent" Cursor="Hand" Click="SortByInService_Click"/>
+                </Grid>
+                <!-- Liste over busser i selve boxen -->
+                <ListBox ItemsSource="{Binding Buses}" SelectedItem="{Binding SelectedBus, Mode=TwoWay}" Height="350">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="60"/>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="80"/>
+                                    <ColumnDefinition Width="120"/>
+                                    <ColumnDefinition Width="100"/>
+                                </Grid.ColumnDefinitions>
+                                <!-- Bus ID -->
+                                <TextBlock Grid.Column="0" Text="{Binding BusId}" Margin="5" TextAlignment="Center" VerticalAlignment="Center"/>
+                                <!-- Rute (ComboBox) -->
+                                <ComboBox Grid.Column="1"
+                                          ItemsSource="{Binding Converter={StaticResource EnumToListConverter}, ConverterParameter={x:Type models:RouteName}}"
+                                          SelectedItem="{Binding Route, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                          Width="90" Height="22" HorizontalContentAlignment="Center" VerticalAlignment="Center"/>
+                                <!-- Batteriniveau -->
+                                <TextBlock Grid.Column="2" Text="{Binding BatteryLevel, StringFormat={}{0:F1}%}" Margin="5" TextAlignment="Center" VerticalAlignment="Center"/>
+                                <!-- Batteri ProgressBar -->
+                                <ProgressBar Grid.Column="3" Height="18" Value="{Binding BatteryLevel}" Maximum="100" Margin="5,0" Foreground="{Binding BatteryLevel, Converter={StaticResource ProgressBarColorConverter}}" VerticalAlignment="Center"/>
+                                <!-- Status (ComboBox) -->
+                                <ComboBox Grid.Column="4"
+                                          ItemsSource="{Binding Converter={StaticResource EnumToListConverter}, ConverterParameter={x:Type models:BusStatus}}"
+                                          SelectedItem="{Binding Status, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                          Width="90" Height="22" HorizontalContentAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+            <!-- Detaljeret Batteristatus til højre. (Ny grid) -->
+            <Border Grid.Column="1" Padding="20" Background="#F7F7F7" CornerRadius="10" Margin="20,0,0,0">
+                <StackPanel>
+                    <TextBlock Text="Detaljeret Batteristatus" FontSize="18" FontWeight="Bold" Margin="0,0,0,15"/>
+                    <ContentControl Content="{Binding SelectedBus}">
+                        <ContentControl.Style>
+                            <Style TargetType="ContentControl">
+                                <Setter Property="ContentTemplate">
+                                    <Setter.Value>
+                                        <DataTemplate>
+                                            <!-- Hvis ingen bus er valgt -->
+                                            <TextBlock Text="Vælg en bus for at få en detaljeret oversigt." FontStyle="Italic" Foreground="Gray"/>
+                                        </DataTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedBus}" Value="{x:Null}">
+                                        <Setter Property="ContentTemplate">
+                                            <Setter.Value>
+                                                <DataTemplate>
+                                                    <TextBlock Text="Vælg en bus for at få en detaljeret oversigt." FontStyle="Italic" Foreground="Gray"/>
+                                                </DataTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding SelectedBus}" Value="{x:Null}"  />
+                                    <DataTrigger Binding="{Binding SelectedBus}" Value="{x:Null}">
+                                        <Setter Property="ContentTemplate">
+                                            <Setter.Value>
+                                                <DataTemplate>
+                                                    <TextBlock Text="Vælg en bus for at få en detaljeret oversigt." FontStyle="Italic" Foreground="Gray"/>
+                                                </DataTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding SelectedBus}" Value="{x:Null}"/>
+                                    <DataTrigger Binding="{Binding SelectedBus}" Value="{x:Null}">
+                                        <Setter Property="ContentTemplate">
+                                            <Setter.Value>
+                                                <DataTemplate>
+                                                    <TextBlock Text="Vælg en bus for at få en detaljeret oversigt." FontStyle="Italic" Foreground="Gray"/>
+                                                </DataTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding SelectedBus}" Value="{x:Null}">
+                                        <Setter Property="ContentTemplate">
+                                            <Setter.Value>
+                                                <DataTemplate>
+                                                    <TextBlock Text="Vælg en bus for at få en detaljeret oversigt." FontStyle="Italic" Foreground="Gray"/>
+                                                </DataTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ContentControl.Style>
+                        <ContentControl.ContentTemplate>
+                            <DataTemplate DataType="{x:Type models:Bus}">
+                                <StackPanel>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding BusId, StringFormat=Bus ID: {0}}" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                        <TextBlock Text="{Binding BatteryCapacity, StringFormat=Batteri Kapacitet: {0} kWh}" Margin="0,0,0,5"/>
+                                        <TextBlock Text="{Binding Year, StringFormat=År: {0}}" Margin="0,0,0,5"/>
+                                        <TextBlock Text="{Binding Route, StringFormat=Busrute: {0}}" Margin="0,0,0,5"/>
+                                        <TextBlock Text="{Binding Consumption, StringFormat=Forbrug: {0} kWh/km}" Margin="0,0,0,5"/>
+                                        <TextBlock Text="{Binding BatteryLevel, StringFormat=Nuværende Niveau: {0:F1}%}" Margin="0,0,0,5"/>
+                                        <TextBlock Text="{Binding LastUpdate, StringFormat=Sidste Opdatering: {0:dd/MM/yyyy HH:mm}}" Margin="0,0,0,5"/>
+                                    </StackPanel>
+                                    <!-- Batteri opdatering -->
+                                    <StackPanel Margin="0,20,0,0">
+                                        <TextBlock Text="Opdater Batteri:" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                                        <TextBox Width="60" Text="{Binding DataContext.BatteryLevelInput, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"/>
+                                        <Button Content="Opdater" Width="70" Command="{Binding DataContext.UpdateBatteryLevelCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
+                                    </StackPanel>
+                                    <!-- Batteri Status Indikator -->
+                                    <Border Margin="0,20,0,0" Padding="15" Background="White" CornerRadius="5">
+                                        <StackPanel>
+                                            <TextBlock Text="Batteri status" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                                            <ProgressBar Height="20" Value="{Binding BatteryLevel}" Maximum="100" Margin="0,0,0,5" Foreground="{Binding BatteryLevel, Converter={StaticResource ProgressBarColorConverter}}">
+                                                <ProgressBar.Style>
+                                                    <Style TargetType="ProgressBar">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsCritical}" Value="True">
+                                                                <Setter Property="Background" Value="#FFE0E0"/>
+                                                                <Setter Property="Foreground" Value="#FF0000"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding BatteryLevel}" Value="20">
+                                                                <Setter Property="Background" Value="#FFF0E0"/>
+                                                                <Setter Property="Foreground" Value="#FF9900"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </ProgressBar.Style>
+                                            </ProgressBar>
+                                            <TextBlock Text="{Binding Status}" 
+                                                     Foreground="{Binding IsCritical, Converter={StaticResource BoolToColorConverter}}"
+                                                     FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ContentControl.ContentTemplate>
+                    </ContentControl>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
