@@ -1,0 +1,78 @@
+﻿<Window x:Class="UMOVEWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UMOVEWPF"
+        mc:Ignorable="d"
+        Title="Umove AS" Height="600" Width="900" Background="White">
+    <Window.DataContext>
+        <local:MainViewModel/>
+    </Window.DataContext>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="180"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="350"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Venstre panel -->
+        <StackPanel Grid.Column="0" Grid.RowSpan="2" Background="#F7F7F7">
+            <Image Source="/UMOVEWPF;component/Images/UmoveBillede.png" Height="60" Margin="10"/>
+            <Button Content="Chauffør" Margin="10,20,10,0" Height="35"/>
+            <Button Content="Driftmedarbejder" Margin="10,10,10,0" Height="35"/>
+            <Button Content="IT-Medarbejder" Margin="10,10,10,0" Height="35"/>
+        </StackPanel>
+
+        <!-- Topbar -->
+        <Border Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" Background="White" Height="80">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="20,0,0,0">
+                <TextBlock Text="Discover" FontSize="22" Foreground="#FF9900" FontWeight="SemiBold"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Midte: Add Bus -->
+        <StackPanel Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" Margin="30,30,0,0">
+            <Button Content="Add Bus" Width="120" Height="40" Background="#FF9900" Foreground="White" FontWeight="Bold" Command="{Binding AddBusCommand}"/>
+        </StackPanel>
+
+        <!-- Højre: Liste over busser -->
+        <StackPanel Grid.Column="2" Grid.Row="1" Margin="20,30,20,20">
+            <TextBlock Text="Busser" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="100"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="Bus ID" FontWeight="Bold" Margin="5"/>
+                <TextBlock Grid.Column="1" Text="Model" FontWeight="Bold" Margin="5"/>
+                <TextBlock Grid.Column="2" Text="Year" FontWeight="Bold" Margin="5"/>
+            </Grid>
+            <ListBox ItemsSource="{Binding Buses}" SelectedItem="{Binding SelectedBus, Mode=TwoWay}" Height="350">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="100"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{Binding BusId}" Margin="5"/>
+                            <TextBlock Grid.Column="1" Text="{Binding Model}" Margin="5"/>
+                            <TextBlock Grid.Column="2" Text="{Binding Year}" Margin="5"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <StackPanel Orientation="Horizontal" Margin="0,20,0,0" HorizontalAlignment="Center">
+                <Button Content="Edit Bus" Width="100" Margin="0,0,10,0" Command="{Binding EditBusCommand}"/>
+                <Button Content="Remove Bus" Width="100" Command="{Binding RemoveBusCommand}"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

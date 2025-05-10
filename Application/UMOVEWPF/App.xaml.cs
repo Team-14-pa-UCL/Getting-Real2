@@ -2,7 +2,7 @@
 using System.Data;
 using System.Windows;
 
-namespace Umove_AS_WPF
+namespace UMOVEWPF
 {
     /// <summary>
     /// Interaction logic for App.xaml
