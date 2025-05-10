@@ -1,6 +1,6 @@
 using System.Windows;
 
-namespace UMOVEWPF
+namespace UMOVEWPF.Views
 {
     public partial class RemoveBusWindow : Window
     {

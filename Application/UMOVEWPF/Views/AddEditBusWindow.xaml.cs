@@ -1,6 +1,7 @@
 using System.Windows;
+using UMOVEWPF.Models;
 
-namespace UMOVEWPF
+namespace UMOVEWPF.Views
 {
     public partial class AddEditBusWindow : Window
     {

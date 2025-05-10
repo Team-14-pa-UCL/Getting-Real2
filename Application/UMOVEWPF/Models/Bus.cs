@@ -1,9 +1,9 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using UMOVEWPF;
+using UMOVEWPF.Models;
 
-namespace UMOVEWPF
+namespace UMOVEWPF.Models
 {
     /// <summary>
     /// Modelklasse for en bus, med alle relevante egenskaber og notifikationer til UI.

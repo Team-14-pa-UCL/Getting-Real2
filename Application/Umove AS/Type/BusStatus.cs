@@ -10,6 +10,7 @@ namespace Umove_AS.Type
     {
         Inroute,
         Intercept, //Ny 04-05-2025 tænkte også der skal være en status for, hvis den er på vej til at erstatte en anden bus.
+        Returning,
         Free,
         Garage,
         Charging,

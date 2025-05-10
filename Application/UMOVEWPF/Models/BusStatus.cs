@@ -1,6 +1,6 @@
 using System;
 
-namespace UMOVEWPF
+namespace UMOVEWPF.Models
 {
     /// <summary>
     /// Mulige statusser for en bus.

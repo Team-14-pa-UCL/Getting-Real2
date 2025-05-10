@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Input;
 
-namespace UMOVEWPF
+namespace UMOVEWPF.Helpers
 {
     /// <summary>
     /// Implementering af ICommand, så man kan binde knapper til metoder i ViewModel.

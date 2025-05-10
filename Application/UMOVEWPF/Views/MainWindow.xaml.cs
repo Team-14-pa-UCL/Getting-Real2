@@ -3,8 +3,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Markup;
+using UMOVEWPF.ViewModels;
 
-namespace UMOVEWPF
+namespace UMOVEWPF.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

@@ -1,5 +1,5 @@
 <!-- Simpelt vindue til bekræftelse af sletning af bus. Viser tekst og to knapper. -->
-<Window x:Class="UMOVEWPF.RemoveBusWindow"
+<Window x:Class="UMOVEWPF.Views.RemoveBusWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Bekræft sletning" Height="150" Width="300" WindowStartupLocation="CenterOwner">

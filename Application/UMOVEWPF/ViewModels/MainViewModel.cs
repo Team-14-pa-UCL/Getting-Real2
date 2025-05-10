@@ -6,8 +6,12 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 using System.IO;
+using UMOVEWPF.Models;
+using UMOVEWPF.Helpers;
+using UMOVEWPF.Views;
+using UMOVEWPF.Converters;
 
-namespace UMOVEWPF
+namespace UMOVEWPF.ViewModels
 {
     /// <summary>
     /// MainViewModel håndterer al forretningslogik og data-binding for hovedvinduet.
