@@ -9,11 +9,12 @@ namespace UMOVEWPF.Converters
     /// <summary>
     /// Konverterer null til Visibility.Collapsed og ikke-null til Visibility.Visible.
     /// Bruges til at skjule/visse UI-elementer baseret på binding.
+    /// Bliver ikke brugt lige nu.
     /// </summary>
     public class NullToVisibilityConverter : IValueConverter
     {
         /// <summary>
-        /// Returnerer Collapsed hvis value er null, ellers Visible.
+        /// Returnerer "Collapsed" hvis value er 0, ellers synlig "Visible".
         /// </summary>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -73,7 +74,7 @@ namespace UMOVEWPF.Converters
     /// Konverterer batteriniveau (double) til en farve til brug i ProgressBar.
     /// Grøn: >60%, Gul: 30-60%, Rød: 13-30%, Sort: <13%.
     /// </summary>
-    public class ProgressBarColorConverter : IValueConverter
+    public class ProgressBarColorConverter : IValueConverter //Bruger indbygget interface. Konvertering af data.
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

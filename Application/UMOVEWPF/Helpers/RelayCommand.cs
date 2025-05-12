@@ -7,13 +7,13 @@ namespace UMOVEWPF.Helpers
     /// Implementering af ICommand, så man kan binde knapper til metoder i ViewModel.
     /// Gør det muligt at bruge kommandoer i MVVM.
     /// </summary>
-    public class RelayCommand : ICommand
+    public class RelayCommand : ICommand //ICommand er intergreret i systmet.
     {
         private readonly Action<object> _execute;
         private readonly Predicate<object> _canExecute;
 
         /// <summary>
-        /// Opretter en ny RelayCommand.
+        /// Opretter en ny RelayCommand Constructor
         /// </summary>
         /// <param name="execute">Metode der skal køres når kommandoen aktiveres</param>
         /// <param name="canExecute">Valgfri metode der bestemmer om kommandoen kan aktiveres</param>
@@ -26,14 +26,15 @@ namespace UMOVEWPF.Helpers
         /// <summary>
         /// Returnerer true hvis kommandoen må aktiveres
         /// </summary>
-        public bool CanExecute(object parameter) => _canExecute == null || _canExecute(parameter);
+        public bool CanExecute(object parameter) => _canExecute == null || _canExecute(parameter); //Hvis den er 0 kan den udføres, ellers ikke. God til brug med knapper.
+        
         /// <summary>
         /// Udfører den tilknyttede metode
         /// </summary>
         public void Execute(object parameter) => _execute(parameter);
 
         /// <summary>
-        /// Event der trigges når CanExecute skal genvurderes
+        /// Event der trigges når CanExecute skal genvurderes. F.eks. med en markert bus.
         /// </summary>
         public event EventHandler CanExecuteChanged
         {
