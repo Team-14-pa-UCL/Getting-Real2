@@ -14,7 +14,7 @@ namespace UMOVEWPF.Models
         
         Returning, // Bus der er blevet aflyst og på vej tilbage for at charge.
         
-        Free,
+        Free, // Måske fjernes
         
         Garage,
         

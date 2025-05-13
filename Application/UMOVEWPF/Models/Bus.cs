@@ -27,12 +27,12 @@ namespace UMOVEWPF.Models
     /// </summary>
     public class Bus : INotifyPropertyChanged
     {
-        // Unikt ID for bussen
+        // Unikt ID for bussen (med get & set)
         private string _busId;
         public string BusId
         {
             get => _busId;
-            set { _busId = value; OnPropertyChanged(); OnPropertyChanged(nameof(DisplayText)); }
+            set { _busId = value; OnPropertyChanged(); OnPropertyChanged(nameof(DisplayText)); } //OnPropertyChanged kalders når værden ændres og opdater displayet samtidig.
         }
 
         // Modelnavn (kan evt. fjernes hvis ikke brugt)
@@ -40,26 +40,26 @@ namespace UMOVEWPF.Models
         public string Model
         {
             get => _model;
-            set { _model = value; OnPropertyChanged(); OnPropertyChanged(nameof(DisplayText)); }
+            set { _model = value; OnPropertyChanged(); OnPropertyChanged(nameof(DisplayText)); } //OnPropertyChanged kalders når værden ændres og opdater displayet samtidig.
         }
 
-        // Produktionsår
+        // Produktionsår (med get & set)
         private string _year;
         public string Year
         {
             get => _year;
-            set { _year = value; OnPropertyChanged(); OnPropertyChanged(nameof(DisplayText)); }
+            set { _year = value; OnPropertyChanged(); OnPropertyChanged(nameof(DisplayText)); } //OnPropertyChanged kalders når værden ændres og opdater displayet samtidig.
         }
 
-        // Batterikapacitet i kWh
+        // Batterikapacitet i kWh (med get & set)
         private double _batteryCapacity;
         public double BatteryCapacity
         {
             get => _batteryCapacity;
-            set { _batteryCapacity = value; OnPropertyChanged(); OnPropertyChanged(nameof(DisplayText)); }
+            set { _batteryCapacity = value; OnPropertyChanged(); OnPropertyChanged(nameof(DisplayText)); } //OnPropertyChanged kalders når værden ændres og opdater displayet samtidig.
         }
 
-        // Nuværende batteriniveau i procent
+        // Nuværende batteriniveau i procent (med get & set)
         private double _batteryLevel;
         public double BatteryLevel
         {
@@ -68,34 +68,34 @@ namespace UMOVEWPF.Models
             { 
                 _batteryLevel = value; 
                 OnPropertyChanged(); 
-                OnPropertyChanged(nameof(DisplayText));
-                OnPropertyChanged(nameof(Status));
-                OnPropertyChanged(nameof(IsCritical));
+                OnPropertyChanged(nameof(DisplayText)); // UI Viser korrekt Tekst
+                OnPropertyChanged(nameof(Status)); // Så bussens batterylevel opdates til en ny status
+                OnPropertyChanged(nameof(IsCritical)); // Vis hvis kritisk.
             }
         }
 
-        // Forbrug i kWh/km
+        // Forbrug i kWh/km (med get & set)
         private double _consumption;
         public double Consumption
         {
             get => _consumption;
-            set { _consumption = value; OnPropertyChanged(); OnPropertyChanged(nameof(DisplayText)); }
+            set { _consumption = value; OnPropertyChanged(); OnPropertyChanged(nameof(DisplayText)); } //OnPropertyChanged kalders når værden ændres og opdater displayet samtidig.
         }
 
-        // Sidste opdateringstidspunkt
+        // Sidste opdateringstidspunkt (med get & set)
         private DateTime _lastUpdate;
         public DateTime LastUpdate
         {
             get => _lastUpdate;
-            set { _lastUpdate = value; OnPropertyChanged(); OnPropertyChanged(nameof(DisplayText)); }
+            set { _lastUpdate = value; OnPropertyChanged(); OnPropertyChanged(nameof(DisplayText)); } //OnPropertyChanged kalders når værden ændres og opdater displayet samtidig.
         }
 
-        // Status for bussen (enum)
+        // Status for bussen (enum) (med get & set)
         private BusStatus _status;
         public BusStatus Status
         {
             get => _status;
-            set { _status = value; OnPropertyChanged(); }
+            set { _status = value; OnPropertyChanged(); } //OnProperChanged kaldes når værden ændres og opdateres i systemt. (Enum opdater resten / dropdown)
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace UMOVEWPF.Models
         }
 
         /// <summary>
-        /// Angiver om bussen er i drift (bruges til sortering/filter)
+        /// Angiver om bussen er i drift (bruges til til simuleringen)
         /// </summary>
         public bool IsInService => Status == BusStatus.Inroute || Status == BusStatus.Intercept || Status == BusStatus.Returning;
 
@@ -126,7 +126,7 @@ namespace UMOVEWPF.Models
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
         /// <summary>
-        /// Kaldes når en property ændres, så UI opdateres
+        /// Kaldes når en property ændres, så UI opdateres. Har sammenhæng til den atrribute man prøver at opdatere i xaml kode)
         /// </summary>
         protected void OnPropertyChanged([CallerMemberName] string name = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));

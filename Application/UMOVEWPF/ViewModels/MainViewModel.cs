@@ -19,7 +19,9 @@ namespace UMOVEWPF.ViewModels
     /// </summary>
     public class MainViewModel : INotifyPropertyChanged
     {
-        public ObservableCollection<Bus> Buses { get; set; } = new ObservableCollection<Bus>(); // Liste over alle busser, som vises i UI'et
+        public ObservableCollection<Bus> Buses { get; set; } = new ObservableCollection<Bus>(); // Liste over alle busser, som vises i UI'et. Opdateres automatisk.
+        
+        // Den bus, som bruger har valgt / kligget på (med get og set)
         private Bus _selectedBus;
         public Bus SelectedBus
         {
@@ -27,13 +29,14 @@ namespace UMOVEWPF.ViewModels
             set { _selectedBus = value; OnPropertyChanged(); } // Den bus, der aktuelt er valgt i UI'et
         }
 
-        private string _currentView = "Bus Administration";
+        private string _currentView = "Bus Administration"; // Viser indhold af Siden
         public string CurrentView
         {
             get => _currentView;
             set { _currentView = value; OnPropertyChanged(); } // Viser hvilken "side" brugeren er på
         }
 
+        //Viser kun de kritiske busser
         private bool _showOnlyCritical;
         public bool ShowOnlyCritical
         {
@@ -46,15 +49,17 @@ namespace UMOVEWPF.ViewModels
             }
         }
 
+        //Bruges som filtrering knap af kritiske busser)
         private bool _showOnlyCriticalToggle;
         public bool ShowOnlyCriticalToggle
         {
             get => _showOnlyCriticalToggle;
             set { _showOnlyCriticalToggle = value; OnPropertyChanged(); FilterBuses(); OnPropertyChanged(nameof(CriticalButtonText)); }
         }
-
+                
         public string CriticalButtonText => ShowOnlyCriticalToggle ? "Se alle busser" : "Se kun kritiske busser"; // Tekst til filter-knap
 
+        ///Bruges kan indtaste et nyt batterineau manuelt for en bus
         private string _batteryLevelInput;
         public string BatteryLevelInput
         {
@@ -62,6 +67,7 @@ namespace UMOVEWPF.ViewModels
             set { _batteryLevelInput = value; OnPropertyChanged(); } // Inputfelt til manuel batteriopdatering
         }
 
+        //Kanp Kommandoer med brug af ICommand. 
         public ICommand AddBusCommand { get; } // Kommando til at tilføje en ny bus
         public ICommand EditBusCommand { get; } // Kommando til at redigere valgt bus
         public ICommand RemoveBusCommand { get; } // Kommando til at fjerne valgt bus
@@ -73,8 +79,15 @@ namespace UMOVEWPF.ViewModels
         public ICommand UpdateBatteryLevelCommand { get; } // Kommando til at opdatere batteriniveau manuelt
         public ICommand ToggleCriticalBusesCommand { get; } // Kommando til at skifte filter for kritiske busser
 
+        /// <summary>
+        /// Fil sti for bussen.
+        /// </summary>
         private readonly string _busFilePath = "buses.txt";
 
+        /// <summary>
+        /// RelayCommand bruges til oprettelse af Commandoer. Se RelayCommand.cs
+        /// Constructor for MainViewModel
+        /// </summary>
         public MainViewModel()
         {
             AddBusCommand = new RelayCommand(_ => AddBus());
@@ -88,6 +101,7 @@ namespace UMOVEWPF.ViewModels
             UpdateBatteryLevelCommand = new RelayCommand(_ => UpdateBatteryLevel(), _ => SelectedBus != null && double.TryParse(BatteryLevelInput, out double _));
             ToggleCriticalBusesCommand = new RelayCommand(_ => ToggleCriticalBuses());
 
+            // Indlæs busser fra fil
             LoadBuses();
             if (Buses.Count == 0)
             {
@@ -104,9 +118,12 @@ namespace UMOVEWPF.ViewModels
                 Buses.Add(new Bus { BusId = "BUS010", Year = "2022", BatteryCapacity = 393, Consumption = 2.0, Route = RouteName.R10, BatteryLevel = 70 });
                 SaveBuses();
             }
+
             // Lyt til ændringer på alle busser for autosave
             foreach (var bus in Buses)
                 bus.PropertyChanged += Bus_PropertyChanged;
+            
+            // Kigger på ændringer i selve listen (F.eks. tilføjelse, fjernelse, buslinje osv.
             Buses.CollectionChanged += (s, e) =>
             {
                 if (e.NewItems != null)
@@ -118,9 +135,13 @@ namespace UMOVEWPF.ViewModels
             };
         }
 
+        /// <summary>
+        /// Gemmer hvis relevante properties ændres.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Bus_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            // Gem hvis relevante properties ændres
+        {            
             if (e.PropertyName == nameof(Bus.Status) ||
                 e.PropertyName == nameof(Bus.Route) ||
                 e.PropertyName == nameof(Bus.BatteryLevel) ||
@@ -132,25 +153,26 @@ namespace UMOVEWPF.ViewModels
             }
         }
 
-        private void ShowBusAdmin()
+        //
+        private void ShowBusAdmin() //Muligvis fjernes Venstre side knap
         {
             CurrentView = "Bus Administration";
             ShowOnlyCritical = false; // Nulstil filter
         }
 
-        private void ShowBatteryStatus()
+        private void ShowBatteryStatus() //Muligvis fjernes Venstre side knap
         {
             CurrentView = "Batteri Status";
             ShowOnlyCritical = false;
         }
 
-        private void ShowCriticalBuses()
+        private void ShowCriticalBuses() //Muligvis fjernes Venstre side knap
         {
             CurrentView = "Kritiske Busser";
             ShowOnlyCritical = true;
         }
 
-        private void ShowChargingPlan()
+        private void ShowChargingPlan() //Muligvis fjernes Venstre side knap
         {
             CurrentView = "Opladningsplan";
             ShowOnlyCritical = false;
@@ -177,7 +199,7 @@ namespace UMOVEWPF.ViewModels
         }
 
         /// <summary>
-        /// Simulerer batteriforbrug for busser i drift og viser advarsel hvis lavt batteri
+        /// Simulerer batteriforbrug for busser i drift og viser advarsel hvis lavt batteri. //Skal laves om
         /// </summary>
         private void UpdateBatteryStatus()
         {
@@ -185,9 +207,9 @@ namespace UMOVEWPF.ViewModels
             {
                 if (bus.Status == BusStatus.Inroute || bus.Status == BusStatus.Intercept || bus.Status == BusStatus.Returning)
                 {
-                    bus.BatteryLevel -= new Random().Next(1, 5);
+                    bus.BatteryLevel -= new Random().Next(1, 5); //Reducer batteriet med et random på 1-5%
                     bus.LastUpdate = DateTime.Now;
-                    if (bus.BatteryLevel < 30)
+                    if (bus.BatteryLevel < 30) // Hvis batterie er under 30% kom med advarsel
                     {
                         System.Windows.MessageBox.Show($"Advarsel: {bus.BusId} har lavt batteriniveau ({bus.BatteryLevel:F1}%)!", "Lavt batteri", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
                     }
@@ -221,8 +243,8 @@ namespace UMOVEWPF.ViewModels
         /// </summary>
         private void AddBus()
         {
-            var win = new AddEditBusWindow();
-            if (win.ShowDialog() == true)
+            var win = new AddEditBusWindow(); //Åbner vindue til at oprette busser
+            if (win.ShowDialog() == true) //Hvis brugeren bekræfter, tilføjes bussen til listen og gemme.
             {
                 Buses.Add(win.Bus);
                 SaveBuses();
@@ -234,8 +256,8 @@ namespace UMOVEWPF.ViewModels
         /// </summary>
         private void EditBus()
         {
-            if (SelectedBus == null) return;
-            var win = new AddEditBusWindow(SelectedBus);
+            if (SelectedBus == null) return; //Man skal have valgt en bus.
+            var win = new AddEditBusWindow(SelectedBus); //Åbner AddEdit viduet for redigering.
             if (win.ShowDialog() == true)
             {
                 SelectedBus.BusId = win.Bus.BusId;
@@ -243,7 +265,7 @@ namespace UMOVEWPF.ViewModels
                 SelectedBus.BatteryCapacity = win.Bus.BatteryCapacity;
                 SelectedBus.Consumption = win.Bus.Consumption;
                 SelectedBus.Route = win.Bus.Route;
-                SaveBuses();
+                SaveBuses(); //Gemmer de nye indtastninger.
                 OnPropertyChanged(nameof(SelectedBus));
             }
         }
@@ -253,9 +275,9 @@ namespace UMOVEWPF.ViewModels
         /// </summary>
         private void RemoveBus()
         {
-            if (SelectedBus == null) return;
-            var win = new RemoveBusWindow();
-            if (win.ShowDialog() == true)
+            if (SelectedBus == null) return; //Skal have valgt en bus
+            var win = new RemoveBusWindow(); //Får vindue med ja / nej confirmation
+            if (win.ShowDialog() == true) //Hvis ja, slet bus
             {
                 Buses.Remove(SelectedBus);
                 SaveBuses();
@@ -269,7 +291,7 @@ namespace UMOVEWPF.ViewModels
         {
             using (var sw = new StreamWriter(_busFilePath, false))
             {
-                foreach (var bus in Buses)
+                foreach (var bus in Buses) //Hver Bus gemmes på en linje, med ; som separator.
                 {
                     sw.WriteLine($"{bus.BusId};{bus.Year};{bus.BatteryCapacity};{bus.Consumption};{bus.Route};{bus.BatteryLevel};{bus.Status};{bus.LastUpdate:O}");
                 }
@@ -285,10 +307,10 @@ namespace UMOVEWPF.ViewModels
             if (!File.Exists(_busFilePath)) return;
             foreach (var line in File.ReadAllLines(_busFilePath))
             {
-                var parts = line.Split(';');
-                if (parts.Length >= 8)
+                var parts = line.Split(';'); //Fortæller at man har split dataen med ;.
+                if (parts.Length >= 8) //Den indeholder 8 dele eller mindre.
                 {
-                    Buses.Add(new Bus
+                    Buses.Add(new Bus // Konverterer hver linje til en bus.
                     {
                         BusId = parts[0],
                         Year = parts[1],
@@ -315,6 +337,7 @@ namespace UMOVEWPF.ViewModels
         /// Event for property changed (INotifyPropertyChanged)
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
+        
         /// <summary>
         /// Kaldes når en property ændres, så UI opdateres
         /// </summary>

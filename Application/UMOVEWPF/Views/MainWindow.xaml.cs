@@ -8,7 +8,7 @@ using UMOVEWPF.ViewModels;
 namespace UMOVEWPF.Views
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for MainWindow.xaml 
     /// </summary>
     public partial class MainWindow : Window
     {
@@ -24,7 +24,7 @@ namespace UMOVEWPF.Views
         private bool _isSortDescending = true;
 
         /// <summary>
-        /// Nem adgang til ViewModel via DataContext
+        /// Nem adgang til ViewModel via DataContext. Som betyder at de arbejder med samme Data.
         /// </summary>
         private MainViewModel ViewModel => DataContext as MainViewModel;
 
