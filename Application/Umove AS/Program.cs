@@ -81,6 +81,7 @@ namespace Umove_AS
            new List<MenuItem>
            {
                 new ("Vis busser", () => garageUI.ShowBusses()),
+                new ("Beregn resterende driftstid", () => garageUI.SelectBus()),
            });
 
         private static MenuPage AdministrateShiftPlans() => new(

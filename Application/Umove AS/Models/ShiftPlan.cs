@@ -10,18 +10,15 @@ namespace Umove_AS.Models
     {
         public string ShiftName { get; set; }
 
-        /*public ShiftPlan(string shiftName)
+        public ShiftPlan(string shiftName)
         {
             ShiftName = shiftName;
-        }*/
+        }
 
-        public static ShiftPlan FromString(string data)//Til Datahandler LoadShiftPlan()
+        public static ShiftPlan FromString(string data) // Til Datahandler LoadShiftPlan()  
         {
             string[] parts = data.Split(',');
-            return new ShiftPlan
-            {
-                ShiftName = parts[0]
-            };
+            return new ShiftPlan(parts[0]); // Pasd arguments the require to the constructor  
         }
     }
 }
