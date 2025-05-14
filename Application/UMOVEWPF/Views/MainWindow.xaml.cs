@@ -34,6 +34,9 @@ namespace UMOVEWPF.Views
         public MainWindow()
         {
             InitializeComponent();
+            var viewModel = new MainViewModel();
+            DataContext = viewModel;
+            Loaded += async (_, __) => await viewModel.InitializeAsync();
         }
 
         /// <summary>

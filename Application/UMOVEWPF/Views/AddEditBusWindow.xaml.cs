@@ -9,13 +9,13 @@ namespace UMOVEWPF.Views
 
         public AddEditBusWindow()
         {
-            InitializeComponent(); //Indlæser Xaml, der hører til vundet.
+            InitializeComponent(); //Indlï¿½ser Xaml, der hï¿½rer til vundet.
             Bus = new Bus
             {
                 BatteryLevel = 100, //Starter med 100%
                 Status = BusStatus.Garage //Starter i Garagen
             };
-            DataContext = Bus; //Binder et til vinduets UI, så busobjeketet opdateres automatisk.
+            DataContext = Bus; //Binder et til vinduets UI, sï¿½ busobjeketet opdateres automatisk.
         }
 
         /// <summary>
@@ -25,22 +25,37 @@ namespace UMOVEWPF.Views
         public AddEditBusWindow(Bus busToEdit)
         {
             InitializeComponent();
-            Bus = new Bus
-            {
-                BusId = busToEdit.BusId,
-                Year = busToEdit.Year,
-                BatteryCapacity = busToEdit.BatteryCapacity,
-                Consumption = busToEdit.Consumption,
-                Route = busToEdit.Route
-            };
+            Bus = busToEdit; // Brug samme instans!
             DataContext = Bus;
         }
 
-        //Når man trykker på tilføj. Så gemmer den og lukket vinduet.
+        //Nï¿½r man trykker pï¿½ tilfï¿½j. Sï¿½ gemmer den og lukket vinduet.
         private void OnSave(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(Bus.BusId))
+            {
+                MessageBox.Show("Bus ID mÃ¥ ikke vÃ¦re tomt.", "Validering", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(Bus.Year))
+            {
+                MessageBox.Show("Ã…r skal udfyldes.", "Validering", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            if (Bus.BatteryCapacity <= 0)
+            {
+                MessageBox.Show("Batterikapacitet skal vÃ¦re stÃ¸rre end 0.", "Validering", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            if (Bus.Consumption <= 0)
+            {
+                MessageBox.Show("Forbrug skal vÃ¦re stÃ¸rre end 0.", "Validering", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             DialogResult = true;
             Close();
         }
+
     }
 } 
