@@ -72,7 +72,7 @@ namespace Umove_AS.Models
             Bus bus = busses.FirstOrDefault(b => Convert.ToInt32(b.ID) == busID);
             if (bus != null)
             {
-                return bus.CurrentChargePercent;
+                return Convert.ToInt32(bus.CurrentChargePercent);
             }
             else
             {
