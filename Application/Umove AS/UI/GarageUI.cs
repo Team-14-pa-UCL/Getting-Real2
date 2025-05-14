@@ -114,6 +114,31 @@ namespace Umove_AS.UI
             }
             Console.ReadKey();
         }
+        public void SelectBus()
+        {
+            var buses = _garageService.GetAllBusses();
+
+
+            Console.Write("Indtast BusID: ");
+            var id = Console.ReadLine();
+
+            Bus selectedBus = buses.FirstOrDefault(bus => bus.ID == id);
+
+            if (selectedBus != null)
+            {
+                //Console.WriteLine($"Selected Bus: {selectedBus}"); // Debug statement
+
+                // Select current weather
+                selectedBus.SelectCurrentWeather();
+            }
+            else
+            {
+                Console.WriteLine("Ugyldigt valg. Vælg venligst en gyldig bus.");
+            }
+
+            Console.ReadKey();
+
+        }
     }
 
 
