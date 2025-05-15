@@ -85,9 +85,9 @@
                                 </Style>
                             </TextBox.Style>
                         </TextBox>
-                        <Button Content="Add Bus" Width="110" Height="35" Background="#FF9900" Foreground="White" FontWeight="Bold" Margin="0,0,10,0" Command="{Binding AddBusCommand}"/>
-                        <Button Content="Edit Bus" Width="110" Height="35" Background="#005A9E" Foreground="White" FontWeight="Bold" Margin="0,0,10,0" BorderBrush="Black" BorderThickness="1" Command="{Binding EditBusCommand}" Opacity="{Binding SelectedBus, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Opacity}"/>
-                        <Button Content="Remove Bus" Width="110" Height="35" Background="#B2001D" Foreground="White" FontWeight="Bold" Margin="0,0,10,0" BorderBrush="Black" BorderThickness="1" Command="{Binding RemoveBusCommand}" Opacity="{Binding SelectedBus, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Opacity}"/>
+                        <Button Content="Tilføj Bus" Width="110" Height="35" Background="#FF9900" Foreground="White" FontWeight="Bold" Margin="0,0,10,0" Command="{Binding AddBusCommand}"/>
+                        <Button Content="Rediger Bus" Width="110" Height="35" Background="#005A9E" Foreground="White" FontWeight="Bold" Margin="0,0,10,0" BorderBrush="Black" BorderThickness="1" Command="{Binding EditBusCommand}" Opacity="{Binding SelectedBus, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Opacity}"/>
+                        <Button Content="Fjern Bus" Width="110" Height="35" Background="#B2001D" Foreground="White" FontWeight="Bold" Margin="0,0,10,0" BorderBrush="Black" BorderThickness="1" Command="{Binding RemoveBusCommand}" Opacity="{Binding SelectedBus, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Opacity}"/>
                         <Button Content="{Binding CriticalButtonText}" Width="170" Height="35" Background="#FF9900" Foreground="White" FontWeight="Bold" Command="{Binding ToggleCriticalBusesCommand}"/>
                     </StackPanel>
                     <!-- Kolonneoverskrifter for listen med sortering -->
@@ -95,6 +95,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="60"/>
                             <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="120"/>
                             <ColumnDefinition Width="80"/>
                             <ColumnDefinition Width="120"/>
                             <ColumnDefinition Width="100"/>
@@ -102,9 +103,10 @@
                         <!-- Sorteringsknapper ved tryk -->
                         <Button x:Name="BtnSortId" Grid.Column="0" Content="ID" FontWeight="Bold" Margin="5" Background="Transparent" BorderBrush="Transparent" Cursor="Hand" Click="SortByBusId_Click"/>
                         <Button x:Name="BtnSortRoute" Grid.Column="1" Content="Rute" FontWeight="Bold" Margin="5" Background="Transparent" BorderBrush="Transparent" Cursor="Hand" Click="SortByRoute_Click"/>
-                        <Button x:Name="BtnSortBattery" Grid.Column="2" Content="Batteri" FontWeight="Bold" Margin="5" Background="Transparent" BorderBrush="Transparent" Cursor="Hand" Click="SortByBattery_Click"/>
-                        <Button x:Name="BtnSortStatus" Grid.Column="3" Content="Status" FontWeight="Bold" Margin="5" Background="Transparent" BorderBrush="Transparent" Cursor="Hand" Click="SortByStatus_Click"/>
-                        <Button x:Name="BtnSortInService" Grid.Column="4" Content="I drift" FontWeight="Bold" Margin="5" Background="Transparent" BorderBrush="Transparent" Cursor="Hand" Click="SortByInService_Click"/>
+                        <TextBlock Grid.Column="2" Text="Funktionstid" FontWeight="Bold" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        <Button x:Name="BtnSortBattery" Grid.Column="3" Content="Batteri" FontWeight="Bold" Margin="5" Background="Transparent" BorderBrush="Transparent" Cursor="Hand" Click="SortByBattery_Click"/>
+                        <Button x:Name="BtnSortStatus" Grid.Column="4" Content="Status" FontWeight="Bold" Margin="5" Background="Transparent" BorderBrush="Transparent" Cursor="Hand" Click="SortByStatus_Click"/>
+                        <Button x:Name="BtnSortInService" Grid.Column="5" Content="I drift" FontWeight="Bold" Margin="5" Background="Transparent" BorderBrush="Transparent" Cursor="Hand" Click="SortByInService_Click"/>
                     </Grid>
                     <!-- Liste over busser i selve boxen -->
                     <ListBox ItemsSource="{Binding FilteredBuses}" SelectedItem="{Binding SelectedBus, Mode=TwoWay}" Height="350">
@@ -114,6 +116,7 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="60"/>
                                         <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="120"/>
                                         <ColumnDefinition Width="80"/>
                                         <ColumnDefinition Width="120"/>
                                         <ColumnDefinition Width="100"/>
@@ -125,12 +128,14 @@
                                               ItemsSource="{Binding Converter={StaticResource EnumToListConverter}, ConverterParameter={x:Type models:RouteName}}"
                                               SelectedItem="{Binding Route, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                               Width="90" Height="22" HorizontalContentAlignment="Center" VerticalAlignment="Center"/>
+                                    <!-- TimeLeftUntil13PercentFormatted -->
+                                    <TextBlock Grid.Column="2" Text="{Binding TimeLeftUntil13PercentFormatted}" Margin="5" TextAlignment="Center" VerticalAlignment="Center"/>
                                     <!-- Batteriniveau -->
-                                    <TextBlock Grid.Column="2" Text="{Binding BatteryLevel, StringFormat={}{0:F1}%}" Margin="5" TextAlignment="Center" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="3" Text="{Binding BatteryLevel, StringFormat={}{0:F1}%}" Margin="5" TextAlignment="Center" VerticalAlignment="Center"/>
                                     <!-- Batteri ProgressBar -->
-                                    <ProgressBar Grid.Column="3" Height="18" Value="{Binding BatteryLevel}" Maximum="100" Margin="5,0" Foreground="{Binding BatteryLevel, Converter={StaticResource ProgressBarColorConverter}}" VerticalAlignment="Center"/>
+                                    <ProgressBar Grid.Column="4" Height="18" Value="{Binding BatteryLevel}" Maximum="100" Margin="5,0" Foreground="{Binding BatteryLevel, Converter={StaticResource ProgressBarColorConverter}}" VerticalAlignment="Center"/>
                                     <!-- Status (ComboBox) -->
-                                    <ComboBox Grid.Column="4"
+                                    <ComboBox Grid.Column="5"
                                               ItemsSource="{Binding Converter={StaticResource EnumToListConverter}, ConverterParameter={x:Type models:BusStatus}}"
                                               SelectedItem="{Binding Status, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                               Width="90" Height="22" HorizontalContentAlignment="Center" VerticalAlignment="Center"/>
@@ -138,8 +143,8 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-                    <!-- Simulate knap centreret under listen -->
-                    <Button Content="Simulate" Width="110" Height="35" Background="#FF9900" Foreground="White" FontWeight="Bold" 
+                    <!-- Simuler knap centreret under listen -->
+                    <Button Content="Simuler 30 min" Width="110" Height="35" Background="#FF9900" Foreground="White" FontWeight="Bold" 
                             Margin="0,15,0,0" HorizontalAlignment="Center" Command="{Binding UpdateBatteryStatusCommand}"/>
                 </StackPanel>
                 <!-- Detaljeret Batteristatus til højre. (Ny grid) -->
@@ -175,9 +180,10 @@
                                     <StackPanel>
                                         <StackPanel>
                                             <TextBlock Text="{Binding BusId, StringFormat=Bus ID: {0}}" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                                            <TextBlock Text="{Binding BatteryCapacity, StringFormat=Batteri Kapacitet: {0} kWh}" Margin="0,0,0,5"/>
+                                            <TextBlock Text="{Binding Model, StringFormat=Bus Model: {0}}" Margin="0,0,0,5"/>
                                             <TextBlock Text="{Binding Year, StringFormat=År: {0}}" Margin="0,0,0,5"/>
                                             <TextBlock Text="{Binding Route, StringFormat=Busrute: {0}}" Margin="0,0,0,5"/>
+                                            <TextBlock Text="{Binding BatteryCapacity, StringFormat=Batteri Kapacitet: {0} kWh}" Margin="0,0,0,5"/>
                                             <TextBlock Text="{Binding Consumption, StringFormat=Forbrug: {0} kWh/km}" Margin="0,0,0,5"/>
                                             <TextBlock Text="{Binding BatteryLevel, StringFormat=Nuværende Niveau: {0:F1}%}" Margin="0,0,0,5"/>
                                             <TextBlock Text="{Binding LastUpdate, StringFormat=Sidste Opdatering: {0:dd/MM/yyyy HH:mm}}" Margin="0,0,0,5"/>

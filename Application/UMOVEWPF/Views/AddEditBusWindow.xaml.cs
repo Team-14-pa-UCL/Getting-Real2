@@ -13,7 +13,8 @@ namespace UMOVEWPF.Views
             Bus = new Bus
             {
                 BatteryLevel = 100, //Starter med 100%
-                Status = BusStatus.Garage //Starter i Garagen
+                Status = BusStatus.Garage, //Starter i Garagen
+                Model = BusModel.MBeCitaro // Default model
             };
             DataContext = Bus; //Binder et til vinduets UI, s� busobjeketet opdateres automatisk.
         }
@@ -40,16 +41,6 @@ namespace UMOVEWPF.Views
             if (string.IsNullOrWhiteSpace(Bus.Year))
             {
                 MessageBox.Show("År skal udfyldes.", "Validering", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            if (Bus.BatteryCapacity <= 0)
-            {
-                MessageBox.Show("Batterikapacitet skal være større end 0.", "Validering", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            if (Bus.Consumption <= 0)
-            {
-                MessageBox.Show("Forbrug skal være større end 0.", "Validering", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 

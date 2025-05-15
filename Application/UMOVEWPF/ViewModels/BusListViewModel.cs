@@ -5,6 +5,7 @@ using UMOVEWPF.Helpers;
 using UMOVEWPF.Models;
 using System;
 using System.Linq;
+using UMOVEWPF; // For SimulationService
 
 namespace UMOVEWPF.ViewModels
 {
@@ -37,6 +38,7 @@ namespace UMOVEWPF.ViewModels
         public ICommand DeleteBusCommand { get; }
         public ICommand UpdateBatteryStatusCommand { get; }
         public ICommand UpdateBatteryLevelCommand { get; }
+        private SimulationService _simService;
 
         public BusListViewModel()
         {
@@ -47,7 +49,8 @@ namespace UMOVEWPF.ViewModels
             DeleteBusCommand = new RelayCommand(_ => DeleteBus(), _ => SelectedBus != null);
             UpdateBatteryStatusCommand = new RelayCommand(_ => UpdateBatteryStatus());
             UpdateBatteryLevelCommand = new RelayCommand(_ => UpdateBatteryLevel(), _ => SelectedBus != null && double.TryParse(BatteryLevelInput, out double _));
-
+            _simService = new SimulationService(Buses);
+            _simService.Start(); // Start live simulering automatisk
             // Load buses immediately when the ViewModel is created
             LoadBusesAsync().GetAwaiter().GetResult();
         }
@@ -91,7 +94,7 @@ namespace UMOVEWPF.ViewModels
             var newBus = new Bus
             {
                 BusId = "New Bus",
-                Model = "New Model",
+                Model = BusModel.MBeCitaro,
                 Year = DateTime.Now.Year.ToString(),
                 Status = BusStatus.Free
             };
@@ -115,12 +118,18 @@ namespace UMOVEWPF.ViewModels
 
         private void UpdateBatteryStatus()
         {
-            var rand = new Random();
+            // Simuler 30 minutters kørsel for hver bus i drift
+            double averageSpeedKmh = 47;
+            double hours = 0.5; // 30 minutter
             foreach (var bus in Buses)
             {
                 if (bus.Status == BusStatus.Inroute || bus.Status == BusStatus.Intercept || bus.Status == BusStatus.Returning)
                 {
-                    bus.BatteryLevel -= rand.Next(1, 5); //Reducer batteriet med et random på 1-5%
+                    double distance = averageSpeedKmh * hours; // km
+                    double consumptionKWh = distance * bus.Consumption; // kWh brugt
+                    double percentUsed = (consumptionKWh / bus.BatteryCapacity) * 100.0;
+                    bus.BatteryLevel -= percentUsed;
+                    if (bus.BatteryLevel < 0) bus.BatteryLevel = 0;
                     bus.LastUpdate = DateTime.Now;
                     if (bus.BatteryLevel < 30)
                     {

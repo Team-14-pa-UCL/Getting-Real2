@@ -17,7 +17,7 @@ namespace UMOVEWPF.Helpers
             {
                 foreach (var bus in buses)
                 {
-                    await sw.WriteLineAsync($"{bus.BusId};{bus.Year};{bus.BatteryCapacity};{bus.Consumption};{bus.Route};{bus.BatteryLevel};{bus.Status};{bus.LastUpdate:O}");
+                    await sw.WriteLineAsync($"{bus.BusId};{bus.Year};{bus.Route};{bus.BatteryLevel};{bus.Status};{bus.LastUpdate:O};{bus.Model}");
                 }
             }
         }
@@ -34,18 +34,17 @@ namespace UMOVEWPF.Helpers
                 while ((line = await sr.ReadLineAsync()) != null)
                 {
                     var parts = line.Split(';');
-                    if (parts.Length >= 8)
+                    if (parts.Length >= 7)
                     {
                         buses.Add(new Bus
                         {
                             BusId = parts[0],
                             Year = parts[1],
-                            BatteryCapacity = double.TryParse(parts[2], out var cap) ? cap : 0,
-                            Consumption = double.TryParse(parts[3], out var cons) ? cons : 0,
-                            Route = Enum.TryParse<RouteName>(parts[4], out var route) ? route : RouteName.None,
-                            BatteryLevel = double.TryParse(parts[5], out var lvl) ? lvl : 0,
-                            Status = Enum.TryParse<BusStatus>(parts[6], out var stat) ? stat : BusStatus.Garage,
-                            LastUpdate = DateTime.TryParse(parts[7], out var dt) ? dt : DateTime.Now
+                            Route = Enum.TryParse<RouteName>(parts[2], out var route) ? route : RouteName.None,
+                            BatteryLevel = double.TryParse(parts[3], out var lvl) ? lvl : 0,
+                            Status = Enum.TryParse<BusStatus>(parts[4], out var stat) ? stat : BusStatus.Garage,
+                            LastUpdate = DateTime.TryParse(parts[5], out var dt) ? dt : DateTime.Now,
+                            Model = Enum.TryParse<BusModel>(parts[6], out var model) ? model : BusModel.MBeCitaro
                         });
                     }
                 }

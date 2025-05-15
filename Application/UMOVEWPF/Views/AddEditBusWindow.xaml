@@ -12,32 +12,54 @@
         <conv:EnumToListConverter x:Key="EnumToListConverter"/>
     </Window.Resources>
     
-    <StackPanel Margin="20">
-        <!-- Bus ID -->
-        <TextBlock Text="Bus ID:"/>
-        <TextBox Text="{Binding BusId, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10"/>
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Top row: Bus ID and Year -->
+        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,10,10">
+            <TextBlock Text="Bus ID:"/>
+            <TextBox Text="{Binding BusId, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
         
-        <!-- Busrute (enum) -->
-        <TextBlock Text="Busrute:"/>
-        <ComboBox ItemsSource="{Binding Converter={StaticResource EnumToListConverter}, ConverterParameter={x:Type models:RouteName}}"
-                  SelectedItem="{Binding Route, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,10"/>
-        
-        <!-- Produktionsår -->
-        <TextBlock Text="År:"/>
-        <TextBox Text="{Binding Year, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10"/>
-        
-        <!-- Batterikapacitet -->
-        <TextBlock Text="Batteri Kapacitet:"/>
-        <TextBox Text="{Binding BatteryCapacity, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10"/>
-        
-        <!-- Forbrug -->
-        <TextBlock Text="Forbrug (kWh/km):"/>
-        <TextBox Text="{Binding Consumption, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10"/>
-        
-        <!-- Knapper til at gemme eller annullere -->
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+        <StackPanel Grid.Row="0" Grid.Column="1" Margin="10,0,0,10">
+            <TextBlock Text="År:"/>
+            <TextBox Text="{Binding Year, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+
+        <!-- Second row: Bus Model and Route -->
+        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,10,10">
+            <TextBlock Text="Bus Model:"/>
+            <ComboBox ItemsSource="{Binding Converter={StaticResource EnumToListConverter}, ConverterParameter={x:Type models:BusModel}}"
+                      SelectedItem="{Binding Model, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Grid.Column="1" Margin="10,0,0,10">
+            <TextBlock Text="Busrute:"/>
+            <ComboBox ItemsSource="{Binding Converter={StaticResource EnumToListConverter}, ConverterParameter={x:Type models:RouteName}}"
+                      SelectedItem="{Binding Route, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+
+        <!-- Battery info display -->
+        <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Margin="0,10">
+            <TextBlock Text="Batteri Specifikationer" FontWeight="Bold" Margin="0,0,0,5"/>
+            <TextBlock Text="{Binding BatteryCapacity, StringFormat=Batteri Kapacitet: {0} kWh}" Margin="0,0,0,5"/>
+            <TextBlock Text="{Binding Consumption, StringFormat=Forbrug: {0} kWh/km}" Margin="0,0,0,5"/>
+        </StackPanel>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="4" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="Gem" Width="80" Margin="0,0,10,0" IsDefault="True" Click="OnSave"/>
             <Button Content="Annuller" Width="80" IsCancel="True"/>
         </StackPanel>
-    </StackPanel>
+    </Grid>
 </Window> 

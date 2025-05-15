@@ -10,6 +10,14 @@ namespace UMOVEWPF.Models
         None, R1A, R10, R11, R13, R132, R133, R137, R139
     }
 
+    public enum BusModel
+    {
+        MBeCitaro,    // 392 kWh, 1.11 kWh/km
+        YutongE12,    // 422 kWh, 0.84 kWh/km
+        BYDK9,        // 324 kWh, 1.26 kWh/km
+        Volvo7900E    // 470 kWh, 1.00 kWh/km
+    }
+
     public class Bus : INotifyPropertyChanged
     {
         private string _busId;
@@ -19,11 +27,36 @@ namespace UMOVEWPF.Models
             set { _busId = value; OnPropertyChanged(); OnPropertyChanged(nameof(DisplayText)); }
         }
 
-        private string _model;
-        public string Model
+        private BusModel _model;
+        public BusModel Model
         {
             get => _model;
-            set { _model = value; OnPropertyChanged(); OnPropertyChanged(nameof(DisplayText)); }
+            set 
+            { 
+                _model = value;
+                // Update battery capacity and consumption based on model
+                switch (value)
+                {
+                    case BusModel.MBeCitaro:
+                        BatteryCapacity = 392;
+                        Consumption = 1.11;
+                        break;
+                    case BusModel.YutongE12:
+                        BatteryCapacity = 422;
+                        Consumption = 0.84;
+                        break;
+                    case BusModel.BYDK9:
+                        BatteryCapacity = 324;
+                        Consumption = 1.26;
+                        break;
+                    case BusModel.Volvo7900E:
+                        BatteryCapacity = 470;
+                        Consumption = 1.00;
+                        break;
+                }
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(DisplayText));
+            }
         }
 
         private string _year;
@@ -53,7 +86,7 @@ namespace UMOVEWPF.Models
                     OnPropertyChanged(nameof(DisplayText));
                     OnPropertyChanged(nameof(Status));
                     OnPropertyChanged(nameof(IsCritical));
-
+                    OnPropertyChanged(nameof(TimeLeftUntil13PercentFormatted));
                     BatteryInfo.Level = value;
                 }
             }
@@ -89,14 +122,32 @@ namespace UMOVEWPF.Models
 
         public BatteryInfo BatteryInfo { get; set; } = new BatteryInfo();
 
-        [JsonIgnore]
         public bool IsCritical => BatteryLevel < 20;
 
-        [JsonIgnore]
         public bool IsInService => Status == BusStatus.Inroute || Status == BusStatus.Intercept || Status == BusStatus.Returning;
 
-        [JsonIgnore]
         public string DisplayText => $"{BusId} | {Model} | {BatteryLevel:F1}%";
+
+        // Beregn tid til 13% batteri tilbage ved 47 km/t
+        public TimeSpan TimeLeftUntil13Percent(double averageSpeedKmh = 47)
+        {
+            double percentToUse = BatteryLevel - 13;
+            if (percentToUse <= 0 || Consumption <= 0) return TimeSpan.Zero;
+            double kmLeft = (percentToUse / 100.0) * BatteryCapacity / Consumption;
+            double hoursLeft = kmLeft / averageSpeedKmh;
+            return TimeSpan.FromHours(hoursLeft);
+        }
+
+        public string TimeLeftUntil13PercentFormatted
+        {
+            get
+            {
+                var t = TimeLeftUntil13Percent();
+                if (t.TotalSeconds <= 0)
+                    return "0:00:00";
+                return $"{(int)t.TotalHours}:{t.Minutes:D2}:{t.Seconds:D2}";
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string name = null)

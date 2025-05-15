@@ -9,6 +9,7 @@ using System.Windows.Input;
 using UMOVEWPF.Models;
 using UMOVEWPF.Helpers;
 using UMOVEWPF.Views;
+using UMOVEWPF; // For SimulationService
 
 namespace UMOVEWPF.ViewModels
 {
@@ -94,6 +95,8 @@ namespace UMOVEWPF.ViewModels
         public ICommand UpdateBatteryLevelCommand { get; }
         public ICommand ToggleCriticalBusesCommand { get; }
 
+        private SimulationService _simService;
+
         public MainViewModel()
         {
             AddBusCommand = new RelayCommand(_ => AddBus());
@@ -107,6 +110,8 @@ namespace UMOVEWPF.ViewModels
             UpdateBatteryLevelCommand = new RelayCommand(_ => UpdateBatteryLevel(), _ => SelectedBus != null && double.TryParse(BatteryLevelInput, out double _));
             ToggleCriticalBusesCommand = new RelayCommand(_ => ToggleCriticalBuses());
             FilteredBuses = new ObservableCollection<Bus>();
+            _simService = new SimulationService(Buses);
+            _simService.Start(); // Start live simulering automatisk
         }
 
         public async Task InitializeAsync()
@@ -196,17 +201,18 @@ namespace UMOVEWPF.ViewModels
 
         private void UpdateBatteryStatus()
         {
+            double averageSpeedKmh = 47;
+            double hours = 0.5; // 30 minutter
             foreach (var bus in Buses)
             {
                 if (bus.Status == BusStatus.Inroute || bus.Status == BusStatus.Intercept || bus.Status == BusStatus.Returning)
                 {
-                    bus.BatteryLevel -= new Random().Next(1, 5);
+                    double distance = averageSpeedKmh * hours;
+                    double consumptionKWh = distance * bus.Consumption;
+                    double percentUsed = (consumptionKWh / bus.BatteryCapacity) * 100.0;
+                    bus.BatteryLevel -= percentUsed;
+                    if (bus.BatteryLevel < 0) bus.BatteryLevel = 0;
                     bus.LastUpdate = DateTime.Now;
-
-                    if (bus.BatteryLevel < 30)
-                    {
-                        MessageBox.Show($"Advarsel: {bus.BusId} har lavt batteriniveau ({bus.BatteryLevel:F1}%)!", "Lavt batteri", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    }
                 }
             }
         }
@@ -263,6 +269,7 @@ namespace UMOVEWPF.ViewModels
             {
                 SelectedBus.BusId = win.Bus.BusId;
                 SelectedBus.Year = win.Bus.Year;
+                SelectedBus.Model = win.Bus.Model;
                 SelectedBus.BatteryCapacity = win.Bus.BatteryCapacity;
                 SelectedBus.Consumption = win.Bus.Consumption;
                 SelectedBus.Route = win.Bus.Route;

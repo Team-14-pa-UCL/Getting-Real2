@@ -40,13 +40,13 @@
         <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Bus.Year}" Margin="5"/>
 
         <Label Grid.Row="3" Grid.Column="0" Content="Battery Capacity:"/>
-        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Bus.BatteryInfo.Capacity}" Margin="5"/>
+        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Bus.BatteryCapacity}" Margin="5"/>
 
         <Label Grid.Row="4" Grid.Column="0" Content="Battery Level:"/>
-        <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Bus.BatteryInfo.Level}" Margin="5"/>
+        <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Bus.BatteryLevel}" Margin="5"/>
 
         <Label Grid.Row="5" Grid.Column="0" Content="Consumption:"/>
-        <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding Bus.BatteryInfo.Consumption}" Margin="5"/>
+        <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding Bus.Consumption}" Margin="5"/>
 
         <Label Grid.Row="6" Grid.Column="0" Content="Status:"/>
         <ComboBox Grid.Row="6" Grid.Column="1"
