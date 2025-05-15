@@ -103,14 +103,36 @@ namespace UMOVEWPF.Models
         public DateTime LastUpdate
         {
             get => _lastUpdate;
-            set { _lastUpdate = value; OnPropertyChanged(); OnPropertyChanged(nameof(DisplayText)); }
+            set
+            {
+                _lastUpdate = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(DisplayText));
+                OnPropertyChanged(nameof(TimeLeftUntil13PercentFormatted));
+            }
+        }
+
+        private DateTime _statusChangedAt = DateTime.Now;
+        public DateTime StatusChangedAt
+        {
+            get => _statusChangedAt;
+            set { _statusChangedAt = value; OnPropertyChanged(); }
         }
 
         private BusStatus _status;
         public BusStatus Status
         {
             get => _status;
-            set { _status = value; OnPropertyChanged(); OnPropertyChanged(nameof(IsInService)); }
+            set
+            {
+                if (_status != value)
+                {
+                    _status = value;
+                    StatusChangedAt = DateTime.Now;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(IsInService));
+                }
+            }
         }
 
         private RouteName _route;

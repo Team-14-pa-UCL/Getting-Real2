@@ -39,6 +39,7 @@ namespace UMOVEWPF.ViewModels
         public ICommand UpdateBatteryStatusCommand { get; }
         public ICommand UpdateBatteryLevelCommand { get; }
         private SimulationService _simService;
+        private Weather _weather = new Weather();
 
         public BusListViewModel()
         {
@@ -49,10 +50,14 @@ namespace UMOVEWPF.ViewModels
             DeleteBusCommand = new RelayCommand(_ => DeleteBus(), _ => SelectedBus != null);
             UpdateBatteryStatusCommand = new RelayCommand(_ => UpdateBatteryStatus());
             UpdateBatteryLevelCommand = new RelayCommand(_ => UpdateBatteryLevel(), _ => SelectedBus != null && double.TryParse(BatteryLevelInput, out double _));
-            _simService = new SimulationService(Buses);
+            _simService = new SimulationService(Buses, _weather);
             _simService.Start(); // Start live simulering automatisk
-            // Load buses immediately when the ViewModel is created
-            LoadBusesAsync().GetAwaiter().GetResult();
+            // Fjern synkron indlæsning af busser her!
+        }
+
+        public async Task InitializeAsync()
+        {
+            await LoadBusesAsync();
         }
 
         private async Task LoadBusesAsync()

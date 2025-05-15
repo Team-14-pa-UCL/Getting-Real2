@@ -8,5 +8,11 @@ namespace UMOVEWPF.Views
         {
             InitializeComponent();
         }
+
+        private async void UserControl_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (DataContext is UMOVEWPF.ViewModels.BusListViewModel vm)
+                await vm.InitializeAsync();
+        }
     }
 } 
