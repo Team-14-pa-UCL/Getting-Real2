@@ -1,22 +1,18 @@
 using System.Windows;
 using UMOVEWPF.Models;
+using UMOVEWPF.ViewModels;
 
 namespace UMOVEWPF.Views
 {
     public partial class AddEditBusWindow : Window
     {
-        public Bus Bus { get; set; } //Bus instance med ID, Batteriniveau.
+        public AddEditBusViewModel ViewModel { get; set; }
 
         public AddEditBusWindow()
         {
-            InitializeComponent(); //Indl�ser Xaml, der h�rer til vundet.
-            Bus = new Bus
-            {
-                BatteryLevel = 100, //Starter med 100%
-                Status = BusStatus.Garage, //Starter i Garagen
-                Model = BusModel.MBeCitaro // Default model
-            };
-            DataContext = Bus; //Binder et til vinduets UI, s� busobjeketet opdateres automatisk.
+            InitializeComponent(); //Indlser Xaml, der hrer til vundet.
+            ViewModel = new AddEditBusViewModel();
+            DataContext = ViewModel;
         }
 
         /// <summary>
@@ -26,25 +22,31 @@ namespace UMOVEWPF.Views
         public AddEditBusWindow(Bus busToEdit)
         {
             InitializeComponent();
-            Bus = busToEdit; // Brug samme instans!
-            DataContext = Bus;
+            ViewModel = new AddEditBusViewModel(busToEdit);
+            DataContext = ViewModel;
         }
 
-        //N�r man trykker p� tilf�j. S� gemmer den og lukket vinduet.
+        //Nr man trykker p tilfj. S gemmer den og lukket vinduet.
         private void OnSave(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(Bus.BusId))
+            if (string.IsNullOrWhiteSpace(ViewModel.Bus.BusId))
             {
                 MessageBox.Show("Bus ID må ikke være tomt.", "Validering", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-            if (string.IsNullOrWhiteSpace(Bus.Year))
+            if (string.IsNullOrWhiteSpace(ViewModel.Bus.Year))
             {
                 MessageBox.Show("År skal udfyldes.", "Validering", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             DialogResult = true;
+            Close();
+        }
+
+        private void OnCancel(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
             Close();
         }
 

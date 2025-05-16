@@ -28,7 +28,10 @@ namespace UMOVEWPF.ViewModels
         {
             Weather = weather;
             Months = new ObservableCollection<Weather.Month>(Enum.GetValues(typeof(Weather.Month)).Cast<Weather.Month>());
-            OkCommand = new RelayCommand(_ => OkClicked?.Invoke(this, EventArgs.Empty));
+            OkCommand = new RelayCommand(_ => {
+                Weather.SaveToFile("weather.json");
+                OkClicked?.Invoke(this, EventArgs.Empty);
+            });
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

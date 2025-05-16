@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
+using System.IO;
 
 namespace UMOVEWPF.Models
 {
@@ -78,5 +79,33 @@ namespace UMOVEWPF.Models
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        public void SaveToFile(string path)
+        {
+            using (var sw = new StreamWriter(path, false))
+            {
+                sw.WriteLine($"{SelectedMonth};{IsRaining}");
+            }
+        }
+
+        public void LoadFromFile(string path)
+        {
+            if (!File.Exists(path)) return;
+            using (var sr = new StreamReader(path))
+            {
+                var line = sr.ReadLine();
+                if (line != null)
+                {
+                    var parts = line.Split(';');
+                    if (parts.Length == 2)
+                    {
+                        if (Enum.TryParse(parts[0], out Month month))
+                            SelectedMonth = month;
+                        if (bool.TryParse(parts[1], out bool rain))
+                            IsRaining = rain;
+                    }
+                }
+            }
+        }
     }
 }

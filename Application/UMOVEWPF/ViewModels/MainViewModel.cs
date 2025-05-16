@@ -106,6 +106,7 @@ namespace UMOVEWPF.ViewModels
 
         public MainViewModel()
         {
+            Weather.LoadFromFile("weather.json");
             AddBusCommand = new RelayCommand(_ => AddBus());
             EditBusCommand = new RelayCommand(_ => EditBus(), _ => SelectedBus != null);
             RemoveBusCommand = new RelayCommand(_ => RemoveBus(), _ => SelectedBus != null);
@@ -238,6 +239,35 @@ namespace UMOVEWPF.ViewModels
             double hours = 0.5; // 30 minutter
             double consumptionMultiplier = Weather.ConsumptionMultiplier;
             DateTime simulatedNow = DateTime.Now;
+
+            // Tag snapshot af LastUpdate for alle busser
+            var lastUpdates = Buses.ToDictionary(b => b, b => b.LastUpdate);
+
+            // Først: statusovergange
+            foreach (var bus in Buses.ToList())
+            {
+                var oldLastUpdate = lastUpdates[bus];
+                // Hvis bus er Intercept og der er gået 30 min siden StatusChangedAt
+                if (bus.Status == BusStatus.Intercept && (oldLastUpdate - bus.StatusChangedAt).TotalMinutes > 30)
+                {
+                    var replacedBus = Buses.FirstOrDefault(b2 => b2.Status == BusStatus.Inroute && (bus.Route == b2.Route) && b2.BatteryLevel < 30);
+                    bus.Status = BusStatus.Inroute;
+                    bus.StatusChangedAt = oldLastUpdate;
+                    if (replacedBus != null)
+                    {
+                        replacedBus.Status = BusStatus.Returning;
+                        replacedBus.StatusChangedAt = oldLastUpdate;
+                    }
+                }
+                // Hvis bus er Returning og der er gået 30 min siden StatusChangedAt
+                if (bus.Status == BusStatus.Returning && (oldLastUpdate - bus.StatusChangedAt).TotalMinutes > 30)
+                {
+                    bus.Status = BusStatus.Charging;
+                    bus.StatusChangedAt = oldLastUpdate;
+                }
+            }
+
+            // Derefter: opdater LastUpdate og batteri efter statusflowet
             foreach (var bus in Buses)
             {
                 if (bus.Status == BusStatus.Inroute || bus.Status == BusStatus.Intercept || bus.Status == BusStatus.Returning)
@@ -270,31 +300,8 @@ namespace UMOVEWPF.ViewModels
                     ShowBusReplacementDialog(bus);
                 }
             }
-
-            // Simuler status-skift baseret på simuleret tid
-            foreach (var bus in Buses.ToList())
-            {
-                // Hvis bus er Intercept og der er gået 30 min siden StatusChangedAt
-                if (bus.Status == BusStatus.Intercept && (bus.LastUpdate - bus.StatusChangedAt).TotalMinutes >= 30)
-                {
-                    // Find den bus der skal returnere (den der blev afløst)
-                    var replacedBus = Buses.FirstOrDefault(b => b.Status == BusStatus.Returning && (bus.Route == b.Route));
-                    bus.Status = BusStatus.Inroute;
-                    bus.StatusChangedAt = bus.LastUpdate; // Simuleret tid
-                    if (replacedBus != null)
-                    {
-                        replacedBus.Status = BusStatus.Returning;
-                        replacedBus.StatusChangedAt = replacedBus.LastUpdate; // Simuleret tid
-                    }
-                }
-                // Hvis bus er Returning og der er gået 30 min siden StatusChangedAt
-                if (bus.Status == BusStatus.Returning && (bus.LastUpdate - bus.StatusChangedAt).TotalMinutes >= 30)
-                {
-                    bus.Status = BusStatus.Charging;
-                    bus.StatusChangedAt = bus.LastUpdate; // Simuleret tid
-                }
-            }
             SaveBusesAsync().GetAwaiter().GetResult();
+            FilterBuses();
         }
 
         private void UpdateBatteryLevel()
@@ -318,6 +325,7 @@ namespace UMOVEWPF.ViewModels
             }
             BatteryLevelInput = string.Empty;
             SaveBusesAsync().GetAwaiter().GetResult();
+            FilterBuses();
         }
 
         private void ShowBusReplacementDialog(Bus lowBatteryBus)
@@ -328,13 +336,13 @@ namespace UMOVEWPF.ViewModels
             viewModel.BusSelected += (s, replacementBus) =>
             {
                 window.Close();
-                // Set simulated time for status change
+                var simNow = replacementBus.LastUpdate;
                 replacementBus.Status = BusStatus.Intercept;
-                replacementBus.StatusChangedAt = replacementBus.LastUpdate;
+                replacementBus.StatusChangedAt = simNow;
                 replacementBus.Route = lowBatteryBus.Route;
-                lowBatteryBus.Status = BusStatus.Returning;
-                lowBatteryBus.StatusChangedAt = lowBatteryBus.LastUpdate;
-                StartBusReplacementProcess(lowBatteryBus, replacementBus);
+                // lowBatteryBus forbliver i Inroute indtil replacementBus er færdig med Intercept
+                SaveBusesAsync().GetAwaiter().GetResult();
+                FilterBuses();
             };
 
             viewModel.Postponed += (s, e) =>
@@ -359,43 +367,12 @@ namespace UMOVEWPF.ViewModels
             window.ShowDialog();
         }
 
-        private void StartBusReplacementProcess(Bus lowBatteryBus, Bus replacementBus)
-        {
-            // Set the replacement bus to intercept status immediately
-            replacementBus.Status = BusStatus.Intercept;
-            SaveBusesAsync().GetAwaiter().GetResult();
-
-            // Start a timer for the replacement bus to reach the low battery bus (30 minutes)
-            var interceptTimer = new System.Windows.Threading.DispatcherTimer();
-            interceptTimer.Interval = TimeSpan.FromMinutes(30);
-            interceptTimer.Tick += (s, e) =>
-            {
-                interceptTimer.Stop();
-                // After 30 min: replacement bus goes Inroute, low battery bus goes Returning
-                replacementBus.Status = BusStatus.Inroute;
-                lowBatteryBus.Status = BusStatus.Returning;
-                SaveBusesAsync().GetAwaiter().GetResult();
-
-                // Start a timer for the low battery bus to return to garage (30 minutes)
-                var returnTimer = new System.Windows.Threading.DispatcherTimer();
-                returnTimer.Interval = TimeSpan.FromMinutes(30);
-                returnTimer.Tick += (s2, e2) =>
-                {
-                    returnTimer.Stop();
-                    lowBatteryBus.Status = BusStatus.Charging;
-                    SaveBusesAsync().GetAwaiter().GetResult();
-                };
-                returnTimer.Start();
-            };
-            interceptTimer.Start();
-        }
-
         private void AddBus()
         {
             var win = new AddEditBusWindow();
             if (win.ShowDialog() == true)
             {
-                var newBusId = win.Bus.BusId?.Trim();
+                var newBusId = win.ViewModel.Bus.BusId?.Trim();
                 if (string.IsNullOrWhiteSpace(newBusId))
                 {
                     MessageBox.Show("Bus ID er ugyldigt.", "Fejl", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -406,7 +383,7 @@ namespace UMOVEWPF.ViewModels
                     MessageBox.Show($"Bus med ID '{newBusId}' findes allerede.", "Dublet ID", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
-                Buses.Add(win.Bus);
+                Buses.Add(win.ViewModel.Bus);
                 SaveBusesAsync().GetAwaiter().GetResult();
             }
         }
@@ -417,12 +394,12 @@ namespace UMOVEWPF.ViewModels
             var win = new AddEditBusWindow(SelectedBus);
             if (win.ShowDialog() == true)
             {
-                SelectedBus.BusId = win.Bus.BusId;
-                SelectedBus.Year = win.Bus.Year;
-                SelectedBus.Model = win.Bus.Model;
-                SelectedBus.BatteryCapacity = win.Bus.BatteryCapacity;
-                SelectedBus.Consumption = win.Bus.Consumption;
-                SelectedBus.Route = win.Bus.Route;
+                SelectedBus.BusId = win.ViewModel.Bus.BusId;
+                SelectedBus.Year = win.ViewModel.Bus.Year;
+                SelectedBus.Model = win.ViewModel.Bus.Model;
+                SelectedBus.BatteryCapacity = win.ViewModel.Bus.BatteryCapacity;
+                SelectedBus.Consumption = win.ViewModel.Bus.Consumption;
+                SelectedBus.Route = win.ViewModel.Bus.Route;
                 SaveBusesAsync().GetAwaiter().GetResult();
                 OnPropertyChanged(nameof(SelectedBus));
             }

@@ -7,66 +7,26 @@
         xmlns:models="clr-namespace:UMOVEWPF.Models"
         xmlns:conv="clr-namespace:UMOVEWPF.Converters"
         mc:Ignorable="d"
-        Title="Bus Udskiftning" Height="450" Width="600"
-        WindowStartupLocation="CenterOwner">
-    <Window.Resources>
-        <conv:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
-    </Window.Resources>
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-
-        <!-- Warning Message -->
-        <TextBlock Grid.Row="0" TextWrapping="Wrap" Margin="0,0,0,20">
-            <Run Text="Advarsel: "/>
-            <Run Text="{Binding LowBatteryBus.BusId}" FontWeight="Bold"/>
-            <Run Text=" har lavt batteriniveau ("/>
-            <Run Text="{Binding LowBatteryBus.BatteryLevel, StringFormat={}{0:F1}%}" FontWeight="Bold"/>
-            <Run Text="). Vælg en bus fra garagen til udskiftning eller udskyd handlingen."/>
-        </TextBlock>
-
-        <!-- Available Buses List -->
-        <ListView Grid.Row="1" ItemsSource="{Binding AvailableBuses}" SelectedItem="{Binding SelectedReplacementBus}">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="Bus ID" Width="100">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding BusId}"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="Batteri" Width="100">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding BatteryLevel, StringFormat={}{0:F1}%}"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="Model" Width="150">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Model}"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                </GridView>
-            </ListView.View>
-        </ListView>
-
-        <!-- Buttons -->
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-            <Button Content="Udskyd 30 min" Width="120" Height="30" Margin="0,0,10,0" 
-                    Command="{Binding PostponeCommand}" 
-                    IsEnabled="{Binding CanPostpone}"/>
-            <Button Content="Vælg Bus" Width="120" Height="30" Margin="0,0,10,0" 
-                    Command="{Binding SelectBusCommand}"
-                    IsEnabled="{Binding SelectedReplacementBus, Converter={StaticResource NullToVisibilityConverter}}"/>
-            <Button Content="Annuller" Width="120" Height="30" 
-                    Command="{Binding CancelCommand}"/>
+        Title="Udskift Bus" Height="400" Width="430" Background="#F7F7F7">
+    <StackPanel Margin="30">
+        <TextBlock Style="{StaticResource UmoveHeader}">Udskift bus med lavt batteri</TextBlock>
+        <TextBlock Margin="0,0,0,0" FontWeight="Bold" FontSize="18" Text="{Binding LowBatteryBus.BusId, FallbackValue=??}"/>
+        <TextBlock Margin="0,0,0,10" FontWeight="Bold" FontSize="18" Text="{Binding LowBatteryBus.Route, FallbackValue=??}"/>
+        <TextBlock Text="Vælg en bus fra garagen som skal erstatte den nuværende:" Margin="0,0,0,10"/>
+        <ListBox ItemsSource="{Binding AvailableBuses}" SelectedItem="{Binding SelectedReplacementBus}" Height="120" Margin="0,0,0,10">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding BusId}" FontWeight="Bold" Width="80"/>
+                        <TextBlock Text="{Binding BatteryLevel, StringFormat={}{0:F1}%}" Width="80"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Vælg" Style="{StaticResource UmoveButton}" Width="90" Command="{Binding SelectBusCommand}"/>
+            <Button Content="Udskyd" Style="{StaticResource UmoveButton}" Width="90" Background="{StaticResource UmoveBlueBrush}" Command="{Binding PostponeCommand}"/>
+            <Button Content="Annuller" Style="{StaticResource UmoveButton}" Width="90" Background="Gray" Command="{Binding CancelCommand}"/>
         </StackPanel>
-    </Grid>
+    </StackPanel>
 </Window> 

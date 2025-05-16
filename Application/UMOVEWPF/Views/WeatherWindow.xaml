@@ -5,22 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:models="clr-namespace:UMOVEWPF.Models"
         mc:Ignorable="d"
-        Title="Weather Conditions" Height="220" Width="350" WindowStartupLocation="CenterOwner">
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <TextBlock Text="Vælg måned:" FontWeight="Bold"/>
-        <ComboBox Grid.Row="1" Margin="0,8,0,0" Width="200"
-                  ItemsSource="{Binding Months}"
-                  SelectedItem="{Binding SelectedMonth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        <CheckBox Grid.Row="2" Margin="0,16,0,0" Content="Regner det?" IsChecked="{Binding IsRaining, Mode=TwoWay}"/>
-        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-            <Button Content="OK" Width="80" Margin="0,0,10,0" IsDefault="True" Command="{Binding OkCommand}"/>
-            <Button Content="Annuller" Width="80" IsCancel="True"/>
+        Title="Vejr" Height="250" Width="400" Background="#F7F7F7">
+    <StackPanel Margin="30">
+        <TextBlock Text="Vælg vejr" Style="{StaticResource UmoveHeader}"/>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <TextBlock Text="Måned:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+            <ComboBox ItemsSource="{Binding Months}" SelectedItem="{Binding SelectedMonth}" Width="120"/>
         </StackPanel>
-    </Grid>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+            <TextBlock Text="Regn:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+            <CheckBox IsChecked="{Binding IsRaining}" Content="Det regner"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="OK" Style="{StaticResource UmoveButton}" Width="90" Command="{Binding OkCommand}"/>
+            <Button Content="Annuller" Style="{StaticResource UmoveButton}" Width="90" Background="{StaticResource UmoveBlueBrush}" Command="{Binding CancelCommand}"/>
+        </StackPanel>
+    </StackPanel>
 </Window> 

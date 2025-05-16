@@ -134,11 +134,8 @@
                                     <TextBlock Grid.Column="3" Text="{Binding BatteryLevel, StringFormat={}{0:F1}%}" Margin="5" TextAlignment="Center" VerticalAlignment="Center"/>
                                     <!-- Batteri ProgressBar -->
                                     <ProgressBar Grid.Column="4" Height="18" Value="{Binding BatteryLevel}" Maximum="100" Margin="5,0" Foreground="{Binding BatteryLevel, Converter={StaticResource ProgressBarColorConverter}}" VerticalAlignment="Center"/>
-                                    <!-- Status (ComboBox) -->
-                                    <ComboBox Grid.Column="5"
-                                              ItemsSource="{Binding Converter={StaticResource EnumToListConverter}, ConverterParameter={x:Type models:BusStatus}}"
-                                              SelectedItem="{Binding Status, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                              Width="90" Height="22" HorizontalContentAlignment="Center" VerticalAlignment="Center"/>
+                                    <!-- Status (TextBlock i stedet for ComboBox) -->
+                                    <TextBlock Grid.Column="5" Text="{Binding Status}" Margin="5" TextAlignment="Center" VerticalAlignment="Center"/>
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>

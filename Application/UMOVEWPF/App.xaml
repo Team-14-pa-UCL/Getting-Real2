@@ -5,6 +5,51 @@
              xmlns:viewmodels="clr-namespace:UMOVEWPF.ViewModels"
              StartupUri="Views/MainWindow.xaml">
     <Application.Resources>
+        <Color x:Key="UmoveOrange">#FF9900</Color>
+        <Color x:Key="UmoveBlue">#005A9E</Color>
+        <SolidColorBrush x:Key="UmoveOrangeBrush" Color="{StaticResource UmoveOrange}"/>
+        <SolidColorBrush x:Key="UmoveBlueBrush" Color="{StaticResource UmoveBlue}"/>
+        <Style x:Key="UmoveButton" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource UmoveOrangeBrush}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="MinWidth" Value="110"/>
+            <Setter Property="Margin" Value="0,0,10,0"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style x:Key="UmoveHeader" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="{StaticResource UmoveOrangeBrush}"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+        </Style>
+        <Style x:Key="UmoveInputBox" TargetType="TextBox">
+            <Setter Property="BorderBrush" Value="{StaticResource UmoveOrangeBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Padding" Value="5,0,0,0"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="5">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="0"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <viewmodels:BusListViewModel x:Key="BusListViewModel"/>
     </Application.Resources>
 </Application>

@@ -5,61 +5,47 @@
         xmlns:local="clr-namespace:UMOVEWPF.Views"
         xmlns:models="clr-namespace:UMOVEWPF.Models"
         xmlns:conv="clr-namespace:UMOVEWPF.Converters"
-        Title="Bus Data" Height="350" Width="400" WindowStartupLocation="CenterOwner">
+        Title="Tilføj/Rediger Bus" Height="459" Width="360" Background="#F7F7F7">
     
     <!-- Converter til at vise enum-værdier i ComboBox -->
     <Window.Resources>
         <conv:EnumToListConverter x:Key="EnumToListConverter"/>
     </Window.Resources>
     
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-
-        <!-- Top row: Bus ID and Year -->
-        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,10,10">
-            <TextBlock Text="Bus ID:"/>
-            <TextBox Text="{Binding BusId, UpdateSourceTrigger=PropertyChanged}"/>
+    <StackPanel Margin="30">
+        <TextBlock Text="Busdetaljer" HorizontalAlignment="Center" Style="{StaticResource UmoveHeader}"/>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <TextBlock Text="Bus ID:" Width="80" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding Bus.BusId}" Width="200" Style="{StaticResource UmoveInputBox}"/>
         </StackPanel>
-        
-        <StackPanel Grid.Row="0" Grid.Column="1" Margin="10,0,0,10">
-            <TextBlock Text="År:"/>
-            <TextBox Text="{Binding Year, UpdateSourceTrigger=PropertyChanged}"/>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <TextBlock Text="Model:" Width="80" VerticalAlignment="Center"/>
+            <ComboBox ItemsSource="{Binding Models}" SelectedItem="{Binding Bus.Model}" Width="200"/>
         </StackPanel>
-
-        <!-- Second row: Bus Model and Route -->
-        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,10,10">
-            <TextBlock Text="Bus Model:"/>
-            <ComboBox ItemsSource="{Binding Converter={StaticResource EnumToListConverter}, ConverterParameter={x:Type models:BusModel}}"
-                      SelectedItem="{Binding Model, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <TextBlock Text="Kapacitet:" Width="80" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding Bus.BatteryCapacity}" Width="200" IsReadOnly="True" Background="#EEE" Style="{StaticResource UmoveInputBox}"/>
         </StackPanel>
-
-        <StackPanel Grid.Row="1" Grid.Column="1" Margin="10,0,0,10">
-            <TextBlock Text="Busrute:"/>
-            <ComboBox ItemsSource="{Binding Converter={StaticResource EnumToListConverter}, ConverterParameter={x:Type models:RouteName}}"
-                      SelectedItem="{Binding Route, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <TextBlock Text="Forbrug:" Width="80" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding Bus.Consumption}" Width="200" IsReadOnly="True" Background="#EEE" Style="{StaticResource UmoveInputBox}"/>
         </StackPanel>
-
-        <!-- Battery info display -->
-        <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Margin="0,10">
-            <TextBlock Text="Batteri Specifikationer" FontWeight="Bold" Margin="0,0,0,5"/>
-            <TextBlock Text="{Binding BatteryCapacity, StringFormat=Batteri Kapacitet: {0} kWh}" Margin="0,0,0,5"/>
-            <TextBlock Text="{Binding Consumption, StringFormat=Forbrug: {0} kWh/km}" Margin="0,0,0,5"/>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <TextBlock Text="Årstal:" Width="80" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding Bus.Year}" Width="200" Style="{StaticResource UmoveInputBox}"/>
         </StackPanel>
-
-        <!-- Buttons -->
-        <StackPanel Grid.Row="4" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Content="Gem" Width="80" Margin="0,0,10,0" IsDefault="True" Click="OnSave"/>
-            <Button Content="Annuller" Width="80" IsCancel="True"/>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <TextBlock Text="Status:" Width="80" VerticalAlignment="Center"/>
+            <ComboBox ItemsSource="{Binding Source={x:Type models:BusStatus}, Converter={StaticResource EnumToListConverter}}"
+                      SelectedItem="{Binding Bus.Status}" Width="200"/>
         </StackPanel>
-    </Grid>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+            <TextBlock Text="Rute:" Width="80" VerticalAlignment="Center"/>
+            <ComboBox ItemsSource="{Binding Routes}" SelectedItem="{Binding Bus.Route}" Width="200"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Gem" Style="{StaticResource UmoveButton}" Width="90" Click="OnSave"/>
+            <Button Content="Annuller" Style="{StaticResource UmoveButton}" Width="90" Background="{StaticResource UmoveBlueBrush}" Click="OnCancel"/>
+        </StackPanel>
+    </StackPanel>
 </Window> 
