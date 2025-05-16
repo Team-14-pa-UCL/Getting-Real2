@@ -104,6 +104,8 @@ namespace UMOVEWPF.ViewModels
 
         private SimulationService _simService;
 
+        private bool _isReplacementDialogOpen = false;
+
         public MainViewModel()
         {
             Weather.LoadFromFile("weather.json");
@@ -233,21 +235,18 @@ namespace UMOVEWPF.ViewModels
             }
         }
 
-        private void UpdateBatteryStatus()
+        private async void UpdateBatteryStatus()
         {
             double averageSpeedKmh = 47;
             double hours = 0.5; // 30 minutter
             double consumptionMultiplier = Weather.ConsumptionMultiplier;
             DateTime simulatedNow = DateTime.Now;
-
-            // Tag snapshot af LastUpdate for alle busser
             var lastUpdates = Buses.ToDictionary(b => b, b => b.LastUpdate);
 
             // Først: statusovergange
             foreach (var bus in Buses.ToList())
             {
                 var oldLastUpdate = lastUpdates[bus];
-                // Hvis bus er Intercept og der er gået 30 min siden StatusChangedAt
                 if (bus.Status == BusStatus.Intercept && (oldLastUpdate - bus.StatusChangedAt).TotalMinutes > 30)
                 {
                     var replacedBus = Buses.FirstOrDefault(b2 => b2.Status == BusStatus.Inroute && (bus.Route == b2.Route) && b2.BatteryLevel < 30);
@@ -259,7 +258,6 @@ namespace UMOVEWPF.ViewModels
                         replacedBus.StatusChangedAt = oldLastUpdate;
                     }
                 }
-                // Hvis bus er Returning og der er gået 30 min siden StatusChangedAt
                 if (bus.Status == BusStatus.Returning && (oldLastUpdate - bus.StatusChangedAt).TotalMinutes > 30)
                 {
                     bus.Status = BusStatus.Charging;
@@ -280,7 +278,6 @@ namespace UMOVEWPF.ViewModels
                     bus.LastUpdate = bus.LastUpdate.AddMinutes(30); // Simuleret tid
                     simulatedNow = bus.LastUpdate; // Bruges til status-tjek
                 }
-                // Opladning af busser i Charging
                 if (bus.Status == BusStatus.Charging)
                 {
                     double chargePowerKWh = 150 * hours; // 75 kWh per 30 min
@@ -294,13 +291,15 @@ namespace UMOVEWPF.ViewModels
                     }
                     bus.LastUpdate = bus.LastUpdate.AddMinutes(30);
                 }
-                // Vis kun advarsel hvis bus er Inroute og under 30%
-                if (bus.Status == BusStatus.Inroute && bus.BatteryLevel < 30)
+                // Vis kun advarsel hvis bus er Inroute og under 30% og ingen dialog er åben
+                if (bus.Status == BusStatus.Inroute && bus.BatteryLevel < 30 && !_isReplacementDialogOpen)
                 {
-                    ShowBusReplacementDialog(bus);
+                    _isReplacementDialogOpen = true;
+                    await Application.Current.Dispatcher.InvokeAsync(() => ShowBusReplacementDialog(bus));
+                    _isReplacementDialogOpen = false;
                 }
             }
-            SaveBusesAsync().GetAwaiter().GetResult();
+            await SaveBusesAsync();
             FilterBuses();
         }
 
