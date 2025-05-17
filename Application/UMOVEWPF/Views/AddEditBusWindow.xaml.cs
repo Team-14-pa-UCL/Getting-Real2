@@ -1,21 +1,18 @@
 using System.Windows;
 using UMOVEWPF.Models;
+using UMOVEWPF.ViewModels;
 
 namespace UMOVEWPF.Views
 {
     public partial class AddEditBusWindow : Window
     {
-        public Bus Bus { get; set; } //Bus instance med ID, Batteriniveau.
+        public AddEditBusViewModel ViewModel { get; set; }
 
         public AddEditBusWindow()
         {
-            InitializeComponent(); //Indlæser Xaml, der hører til vundet.
-            Bus = new Bus
-            {
-                BatteryLevel = 100, //Starter med 100%
-                Status = BusStatus.Garage //Starter i Garagen
-            };
-            DataContext = Bus; //Binder et til vinduets UI, så busobjeketet opdateres automatisk.
+            InitializeComponent(); //Indlser Xaml, der hrer til vundet.
+            ViewModel = new AddEditBusViewModel();
+            DataContext = ViewModel;
         }
 
         /// <summary>
@@ -25,22 +22,33 @@ namespace UMOVEWPF.Views
         public AddEditBusWindow(Bus busToEdit)
         {
             InitializeComponent();
-            Bus = new Bus
-            {
-                BusId = busToEdit.BusId,
-                Year = busToEdit.Year,
-                BatteryCapacity = busToEdit.BatteryCapacity,
-                Consumption = busToEdit.Consumption,
-                Route = busToEdit.Route
-            };
-            DataContext = Bus;
+            ViewModel = new AddEditBusViewModel(busToEdit);
+            DataContext = ViewModel;
         }
 
-        //Når man trykker på tilføj. Så gemmer den og lukket vinduet.
+        //Nr man trykker p tilfj. S gemmer den og lukket vinduet.
         private void OnSave(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(ViewModel.Bus.BusId))
+            {
+                MessageBox.Show("Bus ID mÃ¥ ikke vÃ¦re tomt.", "Validering", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(ViewModel.Bus.Year))
+            {
+                MessageBox.Show("Ã…r skal udfyldes.", "Validering", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             DialogResult = true;
             Close();
         }
+
+        private void OnCancel(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
+            Close();
+        }
+
     }
 } 

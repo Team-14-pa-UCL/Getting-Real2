@@ -3,93 +3,112 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using System.IO;
 using UMOVEWPF.Models;
 using UMOVEWPF.Helpers;
 using UMOVEWPF.Views;
-using UMOVEWPF.Converters;
+using UMOVEWPF; // For SimulationService
 
 namespace UMOVEWPF.ViewModels
 {
-    /// <summary>
-    /// MainViewModel håndterer al forretningslogik og data-binding for hovedvinduet.
-    /// Indeholder bus-liste, kommandoer og logik for filtrering, sortering og opdatering.
-    /// </summary>
     public class MainViewModel : INotifyPropertyChanged
     {
-        public ObservableCollection<Bus> Buses { get; set; } = new ObservableCollection<Bus>(); // Liste over alle busser, som vises i UI'et. Opdateres automatisk.
-        
-        // Den bus, som bruger har valgt / kligget på (med get og set)
+        public ObservableCollection<Bus> Buses { get; set; } = new ObservableCollection<Bus>();
+
         private Bus _selectedBus;
         public Bus SelectedBus
         {
             get => _selectedBus;
-            set { _selectedBus = value; OnPropertyChanged(); } // Den bus, der aktuelt er valgt i UI'et
+            set { _selectedBus = value; OnPropertyChanged(); OnPropertyChanged(nameof(CurrentConsumption)); OnPropertyChanged(nameof(MonthAndFactor)); OnPropertyChanged(nameof(WiperStatus)); }
         }
 
-        private string _currentView = "Bus Administration"; // Viser indhold af Siden
+        private string _batteryLevelInput;
+        public string BatteryLevelInput
+        {
+            get => _batteryLevelInput;
+            set { _batteryLevelInput = value; OnPropertyChanged(); }
+        }
+
+        private string _currentView = "Bus Administration";
         public string CurrentView
         {
             get => _currentView;
-            set { _currentView = value; OnPropertyChanged(); } // Viser hvilken "side" brugeren er på
+            set { _currentView = value; OnPropertyChanged(); }
         }
 
-        //Viser kun de kritiske busser
         private bool _showOnlyCritical;
         public bool ShowOnlyCritical
         {
             get => _showOnlyCritical;
-            set 
-            { 
-                _showOnlyCritical = value; 
-                OnPropertyChanged();
-                FilterBuses(); // Filtrerer listen hvis kun kritiske busser skal vises
-            }
+            set { _showOnlyCritical = value; OnPropertyChanged(); FilterBuses(); }
         }
 
-        //Bruges som filtrering knap af kritiske busser)
         private bool _showOnlyCriticalToggle;
         public bool ShowOnlyCriticalToggle
         {
             get => _showOnlyCriticalToggle;
             set { _showOnlyCriticalToggle = value; OnPropertyChanged(); FilterBuses(); OnPropertyChanged(nameof(CriticalButtonText)); }
         }
-                
-        public string CriticalButtonText => ShowOnlyCriticalToggle ? "Se alle busser" : "Se kun kritiske busser"; // Tekst til filter-knap
 
-        ///Bruges kan indtaste et nyt batterineau manuelt for en bus
-        private string _batteryLevelInput;
-        public string BatteryLevelInput
+        public string CriticalButtonText => ShowOnlyCriticalToggle ? "Se alle busser" : "Se kun kritiske busser";
+
+        /// <summary>
+        /// Collection der indeholder de filtrerede busser baseret på søgetekst og kritiske busser filter
+        /// </summary>
+        private ObservableCollection<Bus> _filteredBuses;
+        public ObservableCollection<Bus> FilteredBuses
         {
-            get => _batteryLevelInput;
-            set { _batteryLevelInput = value; OnPropertyChanged(); } // Inputfelt til manuel batteriopdatering
+            get => _filteredBuses;
+            set
+            {
+                _filteredBuses = value;
+                OnPropertyChanged(nameof(FilteredBuses));
+            }
         }
 
-        //Kanp Kommandoer med brug af ICommand. 
-        public ICommand AddBusCommand { get; } // Kommando til at tilføje en ny bus
-        public ICommand EditBusCommand { get; } // Kommando til at redigere valgt bus
-        public ICommand RemoveBusCommand { get; } // Kommando til at fjerne valgt bus
-        public ICommand ShowBusAdminCommand { get; } // Kommando til at vise busadministration
-        public ICommand ShowBatteryStatusCommand { get; } // Kommando til at vise batteristatus
-        public ICommand ShowCriticalBusesCommand { get; } // Kommando til at vise kritiske busser
-        public ICommand ShowChargingPlanCommand { get; } // Kommando til at vise opladningsplan
-        public ICommand UpdateBatteryStatusCommand { get; } // Kommando til at simulere batteriforbrug
-        public ICommand UpdateBatteryLevelCommand { get; } // Kommando til at opdatere batteriniveau manuelt
-        public ICommand ToggleCriticalBusesCommand { get; } // Kommando til at skifte filter for kritiske busser
-
         /// <summary>
-        /// Fil sti for bussen.
+        /// Søgetekst der bruges til at filtrere busserne
+        /// Når denne ændres, opdateres FilteredBuses automatisk
         /// </summary>
-        private readonly string _busFilePath = "buses.txt";
+        private string _searchText;
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                _searchText = value;
+                OnPropertyChanged(nameof(SearchText));
+                FilterBuses();
+            }
+        }
 
-        /// <summary>
-        /// RelayCommand bruges til oprettelse af Commandoer. Se RelayCommand.cs
-        /// Constructor for MainViewModel
-        /// </summary>
+        public double CurrentConsumption => SelectedBus != null ? Math.Round(SelectedBus.Consumption * Weather.ConsumptionMultiplier, 2) : 0.0;
+        public string MonthAndFactor => $"Måned: {Weather.SelectedMonth} ({Weather.GetConsumptionMultiplier():0.##}x)";
+        public string WiperStatus => Weather.IsRaining ? "Vinduesvisker: Tændt" : "Vinduesvisker: Slukket";
+
+        public Weather Weather { get; set; } = new Weather();
+        public ICommand ShowWeatherCommand { get; }
+
+        public ICommand AddBusCommand { get; }
+        public ICommand EditBusCommand { get; }
+        public ICommand RemoveBusCommand { get; }
+        public ICommand ShowBusAdminCommand { get; }
+        public ICommand ShowBatteryStatusCommand { get; }
+        public ICommand ShowCriticalBusesCommand { get; }
+        public ICommand ShowChargingPlanCommand { get; }
+        public ICommand UpdateBatteryStatusCommand { get; }
+        public ICommand UpdateBatteryLevelCommand { get; }
+        public ICommand ToggleCriticalBusesCommand { get; }
+
+        private SimulationService _simService;
+
+        private bool _isReplacementDialogOpen = false;
+
         public MainViewModel()
         {
+            Weather.LoadFromFile("weather.json");
             AddBusCommand = new RelayCommand(_ => AddBus());
             EditBusCommand = new RelayCommand(_ => EditBus(), _ => SelectedBus != null);
             RemoveBusCommand = new RelayCommand(_ => RemoveBus(), _ => SelectedBus != null);
@@ -100,30 +119,57 @@ namespace UMOVEWPF.ViewModels
             UpdateBatteryStatusCommand = new RelayCommand(_ => UpdateBatteryStatus());
             UpdateBatteryLevelCommand = new RelayCommand(_ => UpdateBatteryLevel(), _ => SelectedBus != null && double.TryParse(BatteryLevelInput, out double _));
             ToggleCriticalBusesCommand = new RelayCommand(_ => ToggleCriticalBuses());
+            ShowWeatherCommand = new RelayCommand(_ => ShowWeatherWindow());
+            FilteredBuses = new ObservableCollection<Bus>();
 
-            // Indlæs busser fra fil
-            LoadBuses();
+            Weather.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(Weather.SelectedMonth) || e.PropertyName == nameof(Weather.IsRaining))
+                {
+                    OnPropertyChanged(nameof(CurrentConsumption));
+                    OnPropertyChanged(nameof(MonthAndFactor));
+                    OnPropertyChanged(nameof(WiperStatus));
+                }
+            };
+        }
+
+        public async Task InitializeAsync()
+        {
+            await LoadBusesAsync();
+
+            // Opret demo-busser hvis listen stadig er tom efter indlæsning
             if (Buses.Count == 0)
             {
-                // Simuler nogle test-data hvis filen ikke fandtes
-                Buses.Add(new Bus { BusId = "BUS001", Year = "2023", BatteryCapacity = 393, Consumption = 1.2, Route = RouteName.R1A, BatteryLevel = 85 });
-                Buses.Add(new Bus { BusId = "BUS002", Year = "2022", BatteryCapacity = 393, Consumption = 2.0, Route = RouteName.R11, BatteryLevel = 45 });
-                Buses.Add(new Bus { BusId = "BUS003", Year = "2023", BatteryCapacity = 393, Consumption = 1.2, Route = RouteName.R1A, BatteryLevel = 15 });
-                Buses.Add(new Bus { BusId = "BUS004", Year = "2021", BatteryCapacity = 393, Consumption = 2.0, Route = RouteName.R13, BatteryLevel = 60 });
-                Buses.Add(new Bus { BusId = "BUS005", Year = "2020", BatteryCapacity = 393, Consumption = 1.2, Route = RouteName.R137, BatteryLevel = 30 });
-                Buses.Add(new Bus { BusId = "BUS006", Year = "2022", BatteryCapacity = 393, Consumption = 2.0, Route = RouteName.R1A, BatteryLevel = 10 });
-                Buses.Add(new Bus { BusId = "BUS007", Year = "2023", BatteryCapacity = 393, Consumption = 1.2, Route = RouteName.R139, BatteryLevel = 99 });
-                Buses.Add(new Bus { BusId = "BUS008", Year = "2021", BatteryCapacity = 393, Consumption = 2.0, Route = RouteName.R139, BatteryLevel = 55 });
-                Buses.Add(new Bus { BusId = "BUS009", Year = "2020", BatteryCapacity = 393, Consumption = 1.2, Route = RouteName.R1A, BatteryLevel = 22 });
-                Buses.Add(new Bus { BusId = "BUS010", Year = "2022", BatteryCapacity = 393, Consumption = 2.0, Route = RouteName.R10, BatteryLevel = 70 });
-                SaveBuses();
+                var random = new Random();
+                var newBuses = new List<Bus>();
+                for (int i = 1; i <= 80; i++)
+                {
+                    bool isGarage = i <= 30;
+                    var bus = new Bus
+                    {
+                        BusId = $"BUS{i:D3}",
+                        Year = (2020 + (i % 4)).ToString(),
+                        BatteryCapacity = 422,
+                        Consumption = 0.84,
+                        Model = BusModel.YutongE12,
+                        Route = (RouteName)(i % (Enum.GetValues(typeof(RouteName)).Length - 1) + 1), // Skip None
+                        BatteryLevel = isGarage ? 100 : random.Next(35, 101),
+                        Status = isGarage ? BusStatus.Garage : BusStatus.Inroute,
+                        LastUpdate = DateTime.Now.AddMinutes(-random.Next(0, 300)),
+                        StatusChangedAt = DateTime.Now.AddMinutes(-random.Next(0, 300))
+                    };
+                    newBuses.Add(bus);
+                }
+                Buses = new ObservableCollection<Bus>(newBuses);
+                FilteredBuses = new ObservableCollection<Bus>(Buses);
+                await SaveBusesAsync();
             }
 
-            // Lyt til ændringer på alle busser for autosave
+            // Bind PropertyChanged only once for each bus
             foreach (var bus in Buses)
                 bus.PropertyChanged += Bus_PropertyChanged;
-            
-            // Kigger på ændringer i selve listen (F.eks. tilføjelse, fjernelse, buslinje osv.
+
+            // Bind CollectionChanged only once
             Buses.CollectionChanged += (s, e) =>
             {
                 if (e.NewItems != null)
@@ -132,16 +178,19 @@ namespace UMOVEWPF.ViewModels
                 if (e.OldItems != null)
                     foreach (Bus bus in e.OldItems)
                         bus.PropertyChanged -= Bus_PropertyChanged;
+                FilterBuses();
             };
+
+            // Kald kun FilterBuses én gang efter initialisering
+            FilterBuses();
+
+            // Opret og start SimulationService EFTER Buses er sat
+            _simService = new SimulationService(Buses, Weather);
+            _simService.Start();
         }
 
-        /// <summary>
-        /// Gemmer hvis relevante properties ændres.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void Bus_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {            
+        {
             if (e.PropertyName == nameof(Bus.Status) ||
                 e.PropertyName == nameof(Bus.Route) ||
                 e.PropertyName == nameof(Bus.BatteryLevel) ||
@@ -149,199 +198,255 @@ namespace UMOVEWPF.ViewModels
                 e.PropertyName == nameof(Bus.BatteryCapacity) ||
                 e.PropertyName == nameof(Bus.Consumption))
             {
-                SaveBuses();
+                SaveBusesAsync().GetAwaiter().GetResult();
             }
         }
 
-        //
-        private void ShowBusAdmin() //Muligvis fjernes Venstre side knap
-        {
-            CurrentView = "Bus Administration";
-            ShowOnlyCritical = false; // Nulstil filter
-        }
-
-        private void ShowBatteryStatus() //Muligvis fjernes Venstre side knap
-        {
-            CurrentView = "Batteri Status";
-            ShowOnlyCritical = false;
-        }
-
-        private void ShowCriticalBuses() //Muligvis fjernes Venstre side knap
-        {
-            CurrentView = "Kritiske Busser";
-            ShowOnlyCritical = true;
-        }
-
-        private void ShowChargingPlan() //Muligvis fjernes Venstre side knap
-        {
-            CurrentView = "Opladningsplan";
-            ShowOnlyCritical = false;
-        }
+        private void ShowBusAdmin() => CurrentView = "Bus Administration";
+        private void ShowBatteryStatus() => CurrentView = "Batteri Status";
+        private void ShowCriticalBuses() => CurrentView = "Kritiske Busser";
+        private void ShowChargingPlan() => CurrentView = "Opladningsplan";
 
         /// <summary>
-        /// Filtrerer busserne, så kun kritiske vises (batteri < 30%)
+        /// Filtrerer busserne baseret på søgetekst og kritiske busser filter
+        /// Køres automatisk når SearchText ændres eller ShowOnlyCriticalToggle ændres
         /// </summary>
         private void FilterBuses()
         {
+            var filteredList = Buses.AsEnumerable();
+
+            // Filtrer baseret på søgetekst - case-insensitive søgning
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                filteredList = filteredList.Where(b => b.BusId.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+            }
+
+            // Filtrer baseret på kritiske busser (batteriniveau < 30%)
             if (ShowOnlyCriticalToggle)
             {
-                var criticalBuses = Buses.Where(b => b.BatteryLevel < 30).ToList();
-                Buses.Clear();
-                foreach (var bus in criticalBuses)
-                {
-                    Buses.Add(bus);
-                }
+                filteredList = filteredList.Where(b => b.BatteryLevel < 30);
             }
-            else
+
+            // Opdater FilteredBuses med de filtrerede resultater
+            FilteredBuses.Clear();
+            foreach (var bus in filteredList)
             {
-                LoadBuses();
+                FilteredBuses.Add(bus);
             }
         }
 
-        /// <summary>
-        /// Simulerer batteriforbrug for busser i drift og viser advarsel hvis lavt batteri. //Skal laves om
-        /// </summary>
-        private void UpdateBatteryStatus()
+        private async void UpdateBatteryStatus()
         {
+            double averageSpeedKmh = 47;
+            double hours = 0.5; // 30 minutter
+            double consumptionMultiplier = Weather.ConsumptionMultiplier;
+            DateTime simulatedNow = DateTime.Now;
+            var lastUpdates = Buses.ToDictionary(b => b, b => b.LastUpdate);
+
+            // Først: statusovergange
+            foreach (var bus in Buses.ToList())
+            {
+                var oldLastUpdate = lastUpdates[bus];
+                if (bus.Status == BusStatus.Intercept && (oldLastUpdate - bus.StatusChangedAt).TotalMinutes > 30)
+                {
+                    var replacedBus = Buses.FirstOrDefault(b2 => b2.Status == BusStatus.Inroute && (bus.Route == b2.Route) && b2.BatteryLevel < 30);
+                    bus.Status = BusStatus.Inroute;
+                    bus.StatusChangedAt = oldLastUpdate;
+                    if (replacedBus != null)
+                    {
+                        replacedBus.Status = BusStatus.Returning;
+                        replacedBus.StatusChangedAt = oldLastUpdate;
+                    }
+                }
+                if (bus.Status == BusStatus.Returning && (oldLastUpdate - bus.StatusChangedAt).TotalMinutes > 30)
+                {
+                    bus.Status = BusStatus.Charging;
+                    bus.StatusChangedAt = oldLastUpdate;
+                }
+            }
+
+            // Derefter: opdater LastUpdate og batteri efter statusflowet
             foreach (var bus in Buses)
             {
                 if (bus.Status == BusStatus.Inroute || bus.Status == BusStatus.Intercept || bus.Status == BusStatus.Returning)
                 {
-                    bus.BatteryLevel -= new Random().Next(1, 5); //Reducer batteriet med et random på 1-5%
-                    bus.LastUpdate = DateTime.Now;
-                    if (bus.BatteryLevel < 30) // Hvis batterie er under 30% kom med advarsel
+                    double distance = averageSpeedKmh * hours;
+                    double consumptionKWh = distance * bus.Consumption * consumptionMultiplier;
+                    double percentUsed = (consumptionKWh / bus.BatteryCapacity) * 100.0;
+                    bus.BatteryLevel -= percentUsed;
+                    if (bus.BatteryLevel < 0) bus.BatteryLevel = 0;
+                    bus.LastUpdate = bus.LastUpdate.AddMinutes(30); // Simuleret tid
+                    simulatedNow = bus.LastUpdate; // Bruges til status-tjek
+                }
+                if (bus.Status == BusStatus.Charging)
+                {
+                    double chargePowerKWh = 150 * hours; // 75 kWh per 30 min
+                    double percentCharged = (chargePowerKWh / bus.BatteryCapacity) * 100.0;
+                    bus.BatteryLevel += percentCharged;
+                    if (bus.BatteryLevel >= 100)
                     {
-                        System.Windows.MessageBox.Show($"Advarsel: {bus.BusId} har lavt batteriniveau ({bus.BatteryLevel:F1}%)!", "Lavt batteri", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+                        bus.BatteryLevel = 100;
+                        bus.Status = BusStatus.Garage;
+                        bus.StatusChangedAt = bus.LastUpdate.AddMinutes(30);
                     }
+                    bus.LastUpdate = bus.LastUpdate.AddMinutes(30);
+                }
+                // Vis kun advarsel hvis bus er Inroute og under 30% og ingen dialog er åben
+                if (bus.Status == BusStatus.Inroute && bus.BatteryLevel < 30 && !_isReplacementDialogOpen)
+                {
+                    _isReplacementDialogOpen = true;
+                    await Application.Current.Dispatcher.InvokeAsync(() => ShowBusReplacementDialog(bus));
+                    _isReplacementDialogOpen = false;
                 }
             }
+            await SaveBusesAsync();
+            FilterBuses();
         }
 
-        /// <summary>
-        /// Opdaterer batteriniveau manuelt for valgt bus
-        /// </summary>
         private void UpdateBatteryLevel()
         {
             if (SelectedBus == null) return;
-            if (double.TryParse(BatteryLevelInput, out double newLevel))
+            if (!double.TryParse(BatteryLevelInput, out double newLevel))
             {
-                if (newLevel < 0) newLevel = 0;
-                if (newLevel > 100) newLevel = 100;
-                SelectedBus.BatteryLevel = newLevel;
-                SelectedBus.LastUpdate = DateTime.Now;
-                if (newLevel < 30)
-                {
-                    System.Windows.MessageBox.Show($"Advarsel: {SelectedBus.BusId} har lavt batteriniveau ({newLevel:F1}%)!", "Lavt batteri", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
-                }
-                BatteryLevelInput = string.Empty;
-                SaveBuses();
+                MessageBox.Show("Ugyldigt input. Indtast et tal.", "Fejl", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
             }
+            if (newLevel < 0 || newLevel > 100)
+            {
+                MessageBox.Show("Batteriniveau skal være mellem 0 og 100.", "Fejl", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            SelectedBus.BatteryLevel = newLevel;
+            SelectedBus.LastUpdate = DateTime.Now;
+            if (newLevel < 30)
+            {
+                ShowBusReplacementDialog(SelectedBus);
+            }
+            BatteryLevelInput = string.Empty;
+            SaveBusesAsync().GetAwaiter().GetResult();
+            FilterBuses();
         }
 
-        /// <summary>
-        /// Tilføjer en ny bus til listen
-        /// </summary>
+        private void ShowBusReplacementDialog(Bus lowBatteryBus)
+        {
+            var viewModel = new BusReplacementViewModel(Buses, lowBatteryBus);
+            var window = new BusReplacementWindow(viewModel);
+
+            viewModel.BusSelected += (s, replacementBus) =>
+            {
+                window.Close();
+                var simNow = replacementBus.LastUpdate;
+                replacementBus.Status = BusStatus.Intercept;
+                replacementBus.StatusChangedAt = simNow;
+                replacementBus.Route = lowBatteryBus.Route;
+                // lowBatteryBus forbliver i Inroute indtil replacementBus er færdig med Intercept
+                SaveBusesAsync().GetAwaiter().GetResult();
+                FilterBuses();
+            };
+
+            viewModel.Postponed += (s, e) =>
+            {
+                window.Close();
+                // Schedule the warning to show again in 30 minutes
+                var timer = new System.Windows.Threading.DispatcherTimer();
+                timer.Interval = TimeSpan.FromMinutes(30);
+                timer.Tick += (sender, args) =>
+                {
+                    timer.Stop();
+                    ShowBusReplacementDialog(lowBatteryBus);
+                };
+                timer.Start();
+            };
+
+            viewModel.Cancelled += (s, e) =>
+            {
+                window.Close();
+            };
+
+            window.ShowDialog();
+        }
+
         private void AddBus()
         {
-            var win = new AddEditBusWindow(); //Åbner vindue til at oprette busser
-            if (win.ShowDialog() == true) //Hvis brugeren bekræfter, tilføjes bussen til listen og gemme.
+            var win = new AddEditBusWindow();
+            if (win.ShowDialog() == true)
             {
-                Buses.Add(win.Bus);
-                SaveBuses();
+                var newBusId = win.ViewModel.Bus.BusId?.Trim();
+                if (string.IsNullOrWhiteSpace(newBusId))
+                {
+                    MessageBox.Show("Bus ID er ugyldigt.", "Fejl", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+                if (Buses.Any(b => b.BusId.Equals(newBusId, StringComparison.OrdinalIgnoreCase)))
+                {
+                    MessageBox.Show($"Bus med ID '{newBusId}' findes allerede.", "Dublet ID", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+                Buses.Add(win.ViewModel.Bus);
+                SaveBusesAsync().GetAwaiter().GetResult();
             }
         }
 
-        /// <summary>
-        /// Redigerer den valgte bus
-        /// </summary>
         private void EditBus()
         {
-            if (SelectedBus == null) return; //Man skal have valgt en bus.
-            var win = new AddEditBusWindow(SelectedBus); //Åbner AddEdit viduet for redigering.
+            if (SelectedBus == null) return;
+            var win = new AddEditBusWindow(SelectedBus);
             if (win.ShowDialog() == true)
             {
-                SelectedBus.BusId = win.Bus.BusId;
-                SelectedBus.Year = win.Bus.Year;
-                SelectedBus.BatteryCapacity = win.Bus.BatteryCapacity;
-                SelectedBus.Consumption = win.Bus.Consumption;
-                SelectedBus.Route = win.Bus.Route;
-                SaveBuses(); //Gemmer de nye indtastninger.
+                SelectedBus.BusId = win.ViewModel.Bus.BusId;
+                SelectedBus.Year = win.ViewModel.Bus.Year;
+                SelectedBus.Model = win.ViewModel.Bus.Model;
+                SelectedBus.BatteryCapacity = win.ViewModel.Bus.BatteryCapacity;
+                SelectedBus.Consumption = win.ViewModel.Bus.Consumption;
+                SelectedBus.Route = win.ViewModel.Bus.Route;
+                SaveBusesAsync().GetAwaiter().GetResult();
                 OnPropertyChanged(nameof(SelectedBus));
             }
         }
 
-        /// <summary>
-        /// Fjerner den valgte bus
-        /// </summary>
         private void RemoveBus()
         {
-            if (SelectedBus == null) return; //Skal have valgt en bus
-            var win = new RemoveBusWindow(); //Får vindue med ja / nej confirmation
-            if (win.ShowDialog() == true) //Hvis ja, slet bus
+            if (SelectedBus == null) return;
+            var win = new RemoveBusWindow();
+            if (win.ShowDialog() == true)
             {
                 Buses.Remove(SelectedBus);
-                SaveBuses();
+                SaveBusesAsync().GetAwaiter().GetResult();
             }
         }
 
-        /// <summary>
-        /// Gemmer alle busser til fil
-        /// </summary>
-        private void SaveBuses()
+        private async Task SaveBusesAsync()
         {
-            using (var sw = new StreamWriter(_busFilePath, false))
-            {
-                foreach (var bus in Buses) //Hver Bus gemmes på en linje, med ; som separator.
-                {
-                    sw.WriteLine($"{bus.BusId};{bus.Year};{bus.BatteryCapacity};{bus.Consumption};{bus.Route};{bus.BatteryLevel};{bus.Status};{bus.LastUpdate:O}");
-                }
-            }
+            await FileHelper.SaveBusesAsync(Buses);
         }
 
-        /// <summary>
-        /// Loader busser fra fil
-        /// </summary>
-        private void LoadBuses()
+        private async Task LoadBusesAsync()
         {
             Buses.Clear();
-            if (!File.Exists(_busFilePath)) return;
-            foreach (var line in File.ReadAllLines(_busFilePath))
+            var loadedBuses = await FileHelper.LoadBusesAsync();
+            foreach (var bus in loadedBuses)
             {
-                var parts = line.Split(';'); //Fortæller at man har split dataen med ;.
-                if (parts.Length >= 8) //Den indeholder 8 dele eller mindre.
-                {
-                    Buses.Add(new Bus // Konverterer hver linje til en bus.
-                    {
-                        BusId = parts[0],
-                        Year = parts[1],
-                        BatteryCapacity = double.TryParse(parts[2], out var cap) ? cap : 0,
-                        Consumption = double.TryParse(parts[3], out var cons) ? cons : 0,
-                        Route = Enum.TryParse<RouteName>(parts[4], out var route) ? route : RouteName.None,
-                        BatteryLevel = double.TryParse(parts[5], out var lvl) ? lvl : 0,
-                        Status = Enum.TryParse<BusStatus>(parts[6], out var stat) ? stat : BusStatus.Garage,
-                        LastUpdate = DateTime.TryParse(parts[7], out var dt) ? dt : DateTime.Now
-                    });
-                }
+                Buses.Add(bus);
             }
         }
 
-        /// <summary>
-        /// Skifter filter for kritiske busser
-        /// </summary>
         private void ToggleCriticalBuses()
         {
             ShowOnlyCriticalToggle = !ShowOnlyCriticalToggle;
         }
 
-        /// <summary>
-        /// Event for property changed (INotifyPropertyChanged)
-        /// </summary>
+        private void ShowWeatherWindow()
+        {
+            var vm = new WeatherViewModel(Weather);
+            var win = new Views.WeatherWindow(vm);
+            vm.OkClicked += (s, e) => win.Close();
+            win.ShowDialog();
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
-        
-        /// <summary>
-        /// Kaldes når en property ændres, så UI opdateres
-        /// </summary>
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
-} 
+}

@@ -5,39 +5,47 @@
         xmlns:local="clr-namespace:UMOVEWPF.Views"
         xmlns:models="clr-namespace:UMOVEWPF.Models"
         xmlns:conv="clr-namespace:UMOVEWPF.Converters"
-        Title="Bus Data" Height="300" Width="400" WindowStartupLocation="CenterOwner">
+        Title="Tilføj/Rediger Bus" Height="459" Width="360" Background="#F7F7F7">
     
     <!-- Converter til at vise enum-værdier i ComboBox -->
     <Window.Resources>
         <conv:EnumToListConverter x:Key="EnumToListConverter"/>
     </Window.Resources>
     
-    <StackPanel Margin="20">
-        <!-- Bus ID -->
-        <TextBlock Text="Bus ID:"/>
-        <TextBox Text="{Binding BusId, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10"/>
-        
-        <!-- Busrute (enum) -->
-        <TextBlock Text="Busrute:"/>
-        <ComboBox ItemsSource="{Binding Converter={StaticResource EnumToListConverter}, ConverterParameter={x:Type models:RouteName}}"
-                  SelectedItem="{Binding Route, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="0,0,0,10"/>
-        
-        <!-- Produktionsår -->
-        <TextBlock Text="År:"/>
-        <TextBox Text="{Binding Year, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10"/>
-        
-        <!-- Batterikapacitet -->
-        <TextBlock Text="Batteri Kapacitet:"/>
-        <TextBox Text="{Binding BatteryCapacity, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10"/>
-        
-        <!-- Forbrug -->
-        <TextBlock Text="Forbrug (kWh/km):"/>
-        <TextBox Text="{Binding Consumption, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10"/>
-        
-        <!-- Knapper til at gemme eller annullere -->
+    <StackPanel Margin="30">
+        <TextBlock Text="Busdetaljer" HorizontalAlignment="Center" Style="{StaticResource UmoveHeader}"/>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <TextBlock Text="Bus ID:" Width="80" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding Bus.BusId}" Width="200" Style="{StaticResource UmoveInputBox}"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <TextBlock Text="Model:" Width="80" VerticalAlignment="Center"/>
+            <ComboBox ItemsSource="{Binding Models}" SelectedItem="{Binding Bus.Model}" Width="200"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <TextBlock Text="Kapacitet:" Width="80" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding Bus.BatteryCapacity}" Width="200" IsReadOnly="True" Background="#EEE" Style="{StaticResource UmoveInputBox}"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <TextBlock Text="Forbrug:" Width="80" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding Bus.Consumption}" Width="200" IsReadOnly="True" Background="#EEE" Style="{StaticResource UmoveInputBox}"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <TextBlock Text="Årstal:" Width="80" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding Bus.Year}" Width="200" Style="{StaticResource UmoveInputBox}"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <TextBlock Text="Status:" Width="80" VerticalAlignment="Center"/>
+            <ComboBox ItemsSource="{Binding Source={x:Type models:BusStatus}, Converter={StaticResource EnumToListConverter}}"
+                      SelectedItem="{Binding Bus.Status}" Width="200"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+            <TextBlock Text="Rute:" Width="80" VerticalAlignment="Center"/>
+            <ComboBox ItemsSource="{Binding Routes}" SelectedItem="{Binding Bus.Route}" Width="200"/>
+        </StackPanel>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Content="Gem" Width="80" Margin="0,0,10,0" IsDefault="True" Click="OnSave"/>
-            <Button Content="Annuller" Width="80" IsCancel="True"/>
+            <Button Content="Gem" Style="{StaticResource UmoveButton}" Width="90" Click="OnSave"/>
+            <Button Content="Annuller" Style="{StaticResource UmoveButton}" Width="90" Background="{StaticResource UmoveBlueBrush}" Click="OnCancel"/>
         </StackPanel>
     </StackPanel>
 </Window> 
